@@ -1,0 +1,7 @@
+__name__ = "nature-remo"
+__version__ = "0.0.1"
+__author__ = "Shinya Fujino"
+__author_email__ = "shf0811@gmail.com"
+__license__ = "MIT"
+__description__ = "Python client for Nature Remo API"
+__url__ = "https://github.com/morinokami/nature-remo"

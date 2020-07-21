@@ -8,6 +8,13 @@ requests = "*"
 
 [dev-packages]
 pytest = "*"
+flake8 = "*"
+pre-commit = "*"
+black = "==19.10b0"
+responses = "*"
 
 [requires]
 python_version = "3.8"
+
+[pipenv]
+allow_prereleases = true

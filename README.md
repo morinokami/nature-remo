@@ -14,8 +14,8 @@
 
 Status | HTTP Method | Endpoint
 --- | --- | ---
-🔥 | GET | `/1/users/me`
-🔥 | POST | `/1/users/me`
+⚡️ | GET | `/1/users/me`
+⚡️ | POST | `/1/users/me`
 🔥 | GET | `/1/devices`
 🔥 | POST | `/1/detectappliance`
 🔥 | GET | `/1/appliances`
@@ -47,7 +47,9 @@ Status | HTTP Method | Endpoint
 # How to Develop
 
 ```sh
-$ pipenv install --dev
+$ git clone git@github.com:morinokami/nature-remo.git
+$ cd nature-remo
 $ pipenv shell
+$ pipenv install --dev
 $ pre-commit install
 ```
