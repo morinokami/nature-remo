@@ -106,6 +106,31 @@ class TestAPI:
         )
 
         devices = api.get_devices()
+
         assert type(devices) is list
         assert len(devices) == 1
         assert all(type(d) is Device for d in devices)
+
+    @responses.activate
+    def test_update_device(self, api):
+        device = "my-device"
+        name = "natureremo"
+        responses.add(
+            responses.POST, f"{BASE_URL}/1/devices/{device}", status=200
+        )
+
+        try:
+            api.update_device(device, name)
+        except NatureRemoError as e:
+            pytest.fail(str(e))
+
+    @responses.activate
+    def test_update_device_raises(self, api):
+        device = "my-device"
+        name = "natureremo"
+        responses.add(
+            responses.POST, f"{BASE_URL}/1/devices/{device}", status=500
+        )
+
+        with pytest.raises(NatureRemoError):
+            api.update_device(device, name)
