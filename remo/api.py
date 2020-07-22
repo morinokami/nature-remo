@@ -1,13 +1,18 @@
 from enum import auto
 from enum import Enum
+from typing import List
 
 import requests
+from marshmallow import EXCLUDE
 
 from .__version__ import __url__
 from .__version__ import __version__
 from .errors import build_error_message
 from .errors import NatureRemoError
+from .models import Device
+from .models import DeviceSchema
 from .models import User
+from .models import UserSchema
 
 BASE_URL = "https://api.nature.global"
 
@@ -59,7 +64,7 @@ class NatureRemoAPI:
         endpoint = "/1/users/me"
         resp = self.__request(endpoint, HTTPMethod.GET)
         json = self.__get_json(resp)
-        return User.new(json)
+        return UserSchema().load(json, unknown=EXCLUDE)
 
     def update_user(self, nickname: str) -> User:
         """Update authenticated user's information.
@@ -75,4 +80,15 @@ class NatureRemoAPI:
             endpoint, HTTPMethod.POST, {"nickname": nickname}
         )
         json = self.__get_json(resp)
-        return User.new(json)
+        return UserSchema().load(json, unknown=EXCLUDE)
+
+    def get_devices(self) -> List[Device]:
+        """Fetch the list of Remo devices the user has access to.
+
+        Returns:
+            A List of Device objects.
+        """
+        endpoint = "/1/devices"
+        resp = self.__request(endpoint, HTTPMethod.GET)
+        json = self.__get_json(resp)
+        return DeviceSchema(many=True, unknown=EXCLUDE).load(json)

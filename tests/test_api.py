@@ -1,6 +1,7 @@
 import pytest
 import responses
 
+from remo import Device
 from remo import NatureRemoAPI
 from remo import NatureRemoError
 from remo import User
@@ -45,14 +46,8 @@ class TestAPI:
         )
 
         user = api.get_user()
+
         assert type(user) is User
-        assert user.id == user_id
-        assert user.nickname == user_nickname
-        assert (
-            user.as_json_string()
-            == f'{{"id": "{user_id}", "nickname": "{user_nickname}"}}'
-        )
-        assert str(user) == f'User(id="{user_id}", nickname="{user_nickname}")'
 
     @responses.activate
     def test_update_user(self, api):
@@ -66,11 +61,51 @@ class TestAPI:
         )
 
         user = api.update_user(user_nickname)
+
         assert type(user) is User
         assert user.id == user_id
         assert user.nickname == user_nickname
-        assert (
-            user.as_json_string()
-            == f'{{"id": "{user_id}", "nickname": "{user_nickname}"}}'
+
+    @responses.activate
+    def test_get_devices(self, api):
+        device_id = "device-id-123-abc"
+        device_name = "Remo"
+        temperature_offset = 0
+        humidity_offset = 0
+        dummy_datetime = "2020-01-01T01:23:45Z"
+        firmware_version = "Remo/1.0.23"
+        mac_address = "ab:cd:ef:01:23:45"
+        serial_number = "1W111111111111"
+        hu_val = 76
+        il_val = 0
+        mo_val = 1
+        te_val = 25.149109
+        responses.add(
+            responses.GET,
+            f"{BASE_URL}/1/devices",
+            json=[
+                {
+                    "id": device_id,
+                    "name": device_name,
+                    "temperature_offset": temperature_offset,
+                    "humidity_offset": humidity_offset,
+                    "created_at": dummy_datetime,
+                    "updated_at": dummy_datetime,
+                    "firmware_version": firmware_version,
+                    "mac_address": mac_address,
+                    "serial_number": serial_number,
+                    "newest_events": {
+                        "hu": {"val": hu_val, "created_at": dummy_datetime},
+                        "il": {"val": il_val, "created_at": dummy_datetime},
+                        "mo": {"val": mo_val, "created_at": dummy_datetime},
+                        "te": {"val": te_val, "created_at": dummy_datetime},
+                    },
+                }
+            ],
+            status=200,
         )
-        assert str(user) == f'User(id="{user_id}", nickname="{user_nickname}")'
+
+        devices = api.get_devices()
+        assert type(devices) is list
+        assert len(devices) == 1
+        assert all(type(d) is Device for d in devices)
