@@ -1,36 +1,31 @@
-import json
-from typing import Union
+from typing import Type
+
+from marshmallow import fields
+from marshmallow import post_load
+from marshmallow import Schema
 
 
 class NatureRemoModel:
     """Base class for Nature Remo models."""
 
     def as_json_string(self) -> str:
-        return json.dumps(self.json_data, ensure_ascii=True, sort_keys=True)
+        return self.schema().dumps(self)
 
-    @classmethod
-    def new(cls, data: Union[dict, list]):
-        if type(data) is dict:
-            return cls(**data)
-        else:
-            return cls(data)
+
+class UserSchema(Schema):
+    id = fields.Str()
+    nickname = fields.Str()
+
+    @post_load
+    def make_user(self, data, **kwargs):
+        return User(**data, schema=UserSchema)
 
 
 class User(NatureRemoModel):
-    """Class representing a User model."""
-
-    def __init__(self, **kwargs):
-        self.id = None
-        self.nickname = None
-        self.json_data = {
-            "id": None,
-            "nickname": None,
-        }
-
-        for (key, default) in self.json_data.items():
-            setattr(self, key, kwargs.get(key, default))
-            if key in kwargs:
-                self.json_data[key] = kwargs[key]
+    def __init__(self, id: str, nickname: str, schema: Type[UserSchema]):
+        self.id = id
+        self.nickname = nickname
+        self.schema = schema
 
     def __repr__(self):
         return f'User(id="{self.id}", nickname="{self.nickname}")'
