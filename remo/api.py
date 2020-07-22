@@ -92,3 +92,41 @@ class NatureRemoAPI:
         resp = self.__request(endpoint, HTTPMethod.GET)
         json = self.__get_json(resp)
         return DeviceSchema(many=True, unknown=EXCLUDE).load(json)
+
+    def update_device(self, device: str, name: str):
+        """Update Remo.
+
+        Args:
+            device: Device ID.
+            name: Device name.
+        """
+        endpoint = f"/1/devices/{device}"
+        resp = self.__request(endpoint, HTTPMethod.POST, {"name": name})
+        if not resp.ok:
+            raise NatureRemoError(resp.text)
+
+    def delete_device(self, device: str):
+        """Delete Remo.
+
+        Args:
+            device: Device ID.
+        """
+        pass
+
+    def update_temperature_offset(self, device: str, offset: int):
+        """Update temperature offset.
+
+        Args:
+            device: Device ID.
+            offset: Temperature offset value added to the measured temperature.
+        """
+        pass
+
+    def update_humidity_offset(self, device: str, offset: int):
+        """Update humidity offset.
+
+        Args:
+            device: Device ID.
+            offset: Humidity offset value added to the measured humidity.
+        """
+        pass
