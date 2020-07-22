@@ -124,13 +124,68 @@ class TestAPI:
         except NatureRemoError as e:
             pytest.fail(str(e))
 
+        assert len(responses.calls) == 1
+        assert (
+            responses.calls[0].request.url == f"{BASE_URL}/1/devices/{device}"
+        )
+        assert responses.calls[0].request.body == f"name={name}"
+
     @responses.activate
     def test_update_device_raises(self, api):
         device = "my-device"
         name = "natureremo"
         responses.add(
-            responses.POST, f"{BASE_URL}/1/devices/{device}", status=500
+            responses.POST,
+            f"{BASE_URL}/1/devices/{device}",
+            json={"code": 123456, "message": "Bad Request"},
+            status=400,
         )
 
-        with pytest.raises(NatureRemoError):
+        with pytest.raises(NatureRemoError) as excinfo:
             api.update_device(device, name)
+        assert (
+            str(excinfo.value)
+            == "HTTP Status Code: 400, "
+            + "Nature Remo Code: 123456, Message: Bad Request"
+        )
+
+    @responses.activate
+    def test_update_temperature_offset(self, api):
+        device = "my-device"
+        offset = 10
+        responses.add(
+            responses.POST,
+            f"{BASE_URL}/1/devices/{device}/temperature_offset",
+            status=200,
+        )
+
+        try:
+            api.update_temperature_offset(device, offset)
+        except NatureRemoError as e:
+            pytest.fail(str(e))
+
+        assert len(responses.calls) == 1
+        assert (
+            responses.calls[0].request.url
+            == f"{BASE_URL}/1/devices/{device}/temperature_offset"
+        )
+        assert responses.calls[0].request.body == f"offset={offset}"
+
+    @responses.activate
+    def test_update_temperature_offset_raises(self, api):
+        device = "my-device"
+        offset = 10
+        responses.add(
+            responses.POST,
+            f"{BASE_URL}/1/devices/{device}/temperature_offset",
+            json={"code": 123456, "message": "Bad Request"},
+            status=400,
+        )
+
+        with pytest.raises(NatureRemoError) as excinfo:
+            api.update_temperature_offset(device, offset)
+        assert (
+            str(excinfo.value)
+            == "HTTP Status Code: 400, "
+            + "Nature Remo Code: 123456, Message: Bad Request"
+        )

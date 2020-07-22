@@ -103,7 +103,7 @@ class NatureRemoAPI:
         endpoint = f"/1/devices/{device}"
         resp = self.__request(endpoint, HTTPMethod.POST, {"name": name})
         if not resp.ok:
-            raise NatureRemoError(resp.text)
+            raise NatureRemoError(build_error_message(resp))
 
     def delete_device(self, device: str):
         """Delete Remo.
@@ -120,7 +120,10 @@ class NatureRemoAPI:
             device: Device ID.
             offset: Temperature offset value added to the measured temperature.
         """
-        pass
+        endpoint = f"/1/devices/{device}/temperature_offset"
+        resp = self.__request(endpoint, HTTPMethod.POST, {"offset": offset})
+        if not resp.ok:
+            raise NatureRemoError(build_error_message(resp))
 
     def update_humidity_offset(self, device: str, offset: int):
         """Update humidity offset.
