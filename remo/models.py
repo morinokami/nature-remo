@@ -82,7 +82,7 @@ class Device(NatureRemoModel):
     def __repr__(self):
         return (
             f'Device(id="{self.id}", name="{self.name}", '
-            + f"temprature_offset={self.temperature_offset}), "
+            + f"temprature_offset={self.temperature_offset}, "
             + f"humidity_offset={self.humidity_offset}, "
             + f"created_at={repr(self.created_at)}, "
             + f"updated_at={repr(self.updated_at)}, "
