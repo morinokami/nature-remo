@@ -132,4 +132,7 @@ class NatureRemoAPI:
             device: Device ID.
             offset: Humidity offset value added to the measured humidity.
         """
-        pass
+        endpoint = f"/1/devices/{device}/humidity_offset"
+        resp = self.__request(endpoint, HTTPMethod.POST, {"offset": offset})
+        if not resp.ok:
+            raise NatureRemoError(build_error_message(resp))
