@@ -33,7 +33,7 @@ Status | HTTP Method | Endpoint
 🔥 | POST | `/1/signals/{signal}/delete`
 🔥 | POST | `/1/signals/{signal}/send`
 ⚡️ | POST | `/1/devices/{device}`
-🔥 | POST | `/1/devices/{device}/delete`
+⚡️ | POST | `/1/devices/{device}/delete`
 ⚡️ | POST | `/1/devices/{device}/temperature_offset`
 ⚡️ | POST | `/1/devices/{device}/humidity_offset`
 
