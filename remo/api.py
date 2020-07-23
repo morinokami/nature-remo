@@ -9,8 +9,12 @@ from .__version__ import __url__
 from .__version__ import __version__
 from .errors import build_error_message
 from .errors import NatureRemoError
+from .models import Appliance
+from .models import ApplianceSchema  # noqa: F401
 from .models import Device
 from .models import DeviceSchema
+from .models import Signal
+from .models import SignalSchema  # noqa: F401
 from .models import User
 from .models import UserSchema
 
@@ -139,3 +143,183 @@ class NatureRemoAPI:
         resp = self.__request(endpoint, HTTPMethod.POST, {"offset": offset})
         if not resp.ok:
             raise NatureRemoError(build_error_message(resp))
+
+    # TODO
+    def get_appliances(self) -> List[Appliance]:
+        """Fetch the list of appliances.
+
+        Returns:
+            A list of Appliance objects.
+        """
+        endpoint = "​/1​/appliances"  # noqa: F841
+        raise NotImplementedError
+
+    # TODO
+    def create_appliance(
+        self,
+        nickname: str,
+        device: str,
+        image: str,
+        model: str = None,
+        model_type: str = None,
+    ) -> Appliance:
+        """Create a new appliance.
+
+        Args:
+            nickname: Appliance name.
+            device: Device ID.
+            image: Basename of the image file included in the app.
+            model: ApplianceModel ID if the appliance we're trying to create
+              is included in IRDB.
+            model_type: Type of model.
+        """
+        endpoint = "​/1​/appliances"  # noqa: F841
+        raise NotImplementedError
+
+    # TODO
+    def update_appliance_orders(self, appliances: str):
+        """Reorder appliances.
+
+        Args:
+            appliances: List of all appliances' IDs comma separated.
+        """
+        endpoint = "/1/appliance_orders"  # noqa: F841
+        raise NotImplementedError
+
+    # TODO
+    def delete_appliance(self, appliance: str):
+        """Delete appliance.
+
+        Args:
+            appliance: Appliance ID.
+        """
+        endpoint = f"/1/appliances/{appliance}/delete"  # noqa: F841
+        raise NotImplementedError
+
+    # TODO
+    def update_appliance(
+        self, appliance: str, nickname: str, image: str
+    ) -> Appliance:
+        """Update appliance.
+
+        Args:
+            appliance: Appliance ID.
+            nickname: Appliance name.
+            image: Basename of the image file included in the app.
+        """
+        endpoint = f"/1/appliances/{appliance}"  # noqa: F841
+        raise NotImplementedError
+
+    # TODO
+    def update_aircon_settings(
+        self,
+        appliance: str,
+        temperature: str,
+        operation_mode: str,
+        air_volume: str,
+        air_direction: str,
+        button: str,
+    ):
+        """Update air conditioner settings.
+
+        Args:
+            appliance: Appliance ID.
+            temperature: Temperature.
+            operation_mode: AC operation mode.
+            air_volume: AC air volume.
+            air_direction: AC air direction.
+            button: Button.
+        """
+        endpoint = f"/1/appliances/{appliance}/aircon_settings"  # noqa: F841
+        raise NotImplementedError
+
+    # TODO
+    def send_tv_infrared_signal(self, appliance: str, button: str):
+        """Send tv infrared signal.
+
+        Args:
+            appliance: Appliance ID.
+            button: Button name.
+        """
+        endpoint = f"/1/appliances/{appliance}/tv"  # noqa: F841
+        raise NotImplementedError
+
+    # TODO
+    def send_light_infrared_signal(self, appliance: str, button: str):
+        """Send light infrared signal.
+
+        Args:
+            appliance: Appliance ID.
+            button: Button name.
+        """
+        endpoint = f"/1/appliances/{appliance}/light"  # noqa: F841
+        raise NotImplementedError
+
+    # TODO
+    def get_signals(self, appliance: str) -> List[Signal]:
+        """Fetch signals registered under this appliance.
+
+        Args:
+            appliance: Appliance ID.
+        """
+        endpoint = f"/1/appliances/{appliance}/signals"  # noqa: F841
+        raise NotImplementedError
+
+    # TODO
+    def create_signal(
+        self, appliance: str, name: str, message: str, image: str
+    ) -> Signal:
+        """Create a signal under this appliance.
+
+        Args:
+            appliance: Appliance ID.
+            name: Signal name.
+            message: JSON serialized object describing infrared signals.
+              Includes "data", "freq" and "format" keys.
+            image: Basename of the image file included in the app.
+        """
+        endpoint = f"/1/appliances/{appliance}/signals"  # noqa: F841
+        raise NotImplementedError
+
+    # TODO
+    def update_signal_orders(self, appliance: str, signals: str):
+        """Reorder signals under this appliance.
+
+        Args:
+            appliance: Appliance ID.
+            signals: List of all signals' IDs comma separated.
+        """
+        endpoint = f"/1/appliances/{appliance}/signal_orders"  # noqa: F841
+        raise NotImplementedError
+
+    # TODO
+    def update_signal(self, signal: str, name: str, image: str):
+        """Update infrared signal.
+
+        Args:
+            signal: Signal ID.
+            name: Signal name.
+            image: Basename of the image file included in the app.
+        """
+        endpoint = f"/1/signals/{signal}"  # noqa: F841
+        raise NotImplementedError
+
+    # TODO
+    def delete_signal(self, signal: str):
+        """Delete infrared signal.
+
+        Args:
+            signal: Signal ID.
+        """
+        endpoint = f"/1/signals/{signal}/delete"  # noqa: F841
+        raise NotImplementedError
+
+    # TODO
+    def send_signal(self, signal: str):
+        """Send infrared signal.
+
+        Args:
+            signal: Signal ID.
+        """
+        endpoint = f"​/1​/signals​/{signal}​/send"  # noqa: F841
+        raise NotImplementedError

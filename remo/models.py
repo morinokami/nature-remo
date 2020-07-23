@@ -91,3 +91,35 @@ class Device(NatureRemoModel):
             + f'serial_number="{self.serial_number}", '
             + f"newest_events={self.newest_events})"
         )
+
+
+# TODO
+class ApplianceSchema(Schema):
+    @post_load
+    def make_appliance(self, data, **kwargs):
+        return Appliance(**data)
+
+
+# TODO
+class Appliance(NatureRemoModel):
+    def __init__(self):
+        pass
+
+    def __repr__(self):
+        pass
+
+
+# TODO
+class SignalSchema(Schema):
+    @post_load
+    def make_signal(self, data, **kwargs):
+        return Signal(**data)
+
+
+# TODO
+class Signal(NatureRemoModel):
+    def __init__(self):
+        pass
+
+    def __repr__(self):
+        pass
