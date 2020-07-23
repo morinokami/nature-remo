@@ -150,6 +150,42 @@ class TestAPI:
         )
 
     @responses.activate
+    def test_delete_device(self, api):
+        device = "my-device"
+        responses.add(
+            responses.POST, f"{BASE_URL}/1/devices/{device}/delete", status=200
+        )
+
+        try:
+            api.delete_device(device)
+        except NatureRemoError as e:
+            pytest.fail(str(e))
+
+        assert len(responses.calls) == 1
+        assert (
+            responses.calls[0].request.url
+            == f"{BASE_URL}/1/devices/{device}/delete"
+        )
+
+    @responses.activate
+    def test_delete_device_raises(self, api):
+        device = "my-device"
+        responses.add(
+            responses.POST,
+            f"{BASE_URL}/1/devices/{device}/delete",
+            json={"code": 123456, "message": "Bad Request"},
+            status=400,
+        )
+
+        with pytest.raises(NatureRemoError) as excinfo:
+            api.delete_device(device)
+        assert (
+            str(excinfo.value)
+            == "HTTP Status Code: 400, "
+            + "Nature Remo Code: 123456, Message: Bad Request"
+        )
+
+    @responses.activate
     def test_update_temperature_offset(self, api):
         device = "my-device"
         offset = 10

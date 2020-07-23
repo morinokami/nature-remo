@@ -111,7 +111,10 @@ class NatureRemoAPI:
         Args:
             device: Device ID.
         """
-        pass
+        endpoint = f"/1/devices/{device}/delete"
+        resp = self.__request(endpoint, HTTPMethod.POST)
+        if not resp.ok:
+            raise NatureRemoError(build_error_message(resp))
 
     def update_temperature_offset(self, device: str, offset: int):
         """Update temperature offset.
