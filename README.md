@@ -39,10 +39,10 @@ Status | HTTP Method | Endpoint | API
 
 ### [Local API](https://local.swagger.nature.global/)
 
-Status | HTTP Method | Endpoint
---- | --- | ---
-🔥 | GET | `/messages`
-🔥 | POST | `/messages`
+Status | HTTP Method | Endpoint | API
+--- | --- | --- | ---
+🔥 | GET | `/messages` |
+🔥 | POST | `/messages` |
 
 # How to Develop
 
