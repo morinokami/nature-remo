@@ -28,7 +28,7 @@ Status | HTTP Method | Endpoint | API
 ️⚡ | POST | `/1/appliances/{appliance}/light` | `send_light_infrared_signal`
 ⚡️ | GET | `/1/appliances/{appliance}/signals` | `get_signals`
 ⚡ | POST | `/1/appliances/{appliance}/signals` | `create_signal`
-🔥 | POST | `/1/appliances/{appliance}/signal_orders` | `update_signal_orders`
+⚡ | POST | `/1/appliances/{appliance}/signal_orders` | `update_signal_orders`
 🔥 | POST | `/1/signals/{signal}` | `update_signal`
 🔥 | POST | `/1/signals/{signal}/delete` | `delete_signal`
 🔥 | POST | `/1/signals/{signal}/send` | `send_signal`

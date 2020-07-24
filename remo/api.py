@@ -313,7 +313,6 @@ class NatureRemoAPI:
         json = self.__get_json(resp)
         return SignalSchema().load(json)
 
-    # TODO
     def update_signal_orders(self, appliance: str, signals: str):
         """Reorder signals under this appliance.
 
@@ -321,8 +320,10 @@ class NatureRemoAPI:
             appliance: Appliance ID.
             signals: List of all signals' IDs comma separated.
         """
-        endpoint = f"/1/appliances/{appliance}/signal_orders"  # noqa: F841
-        raise NotImplementedError
+        endpoint = f"/1/appliances/{appliance}/signal_orders"
+        resp = self.__request(endpoint, HTTPMethod.POST, {"signals": signals})
+        if not resp.ok:
+            raise NatureRemoError(build_error_message(resp))
 
     # TODO
     def update_signal(self, signal: str, name: str, image: str):
