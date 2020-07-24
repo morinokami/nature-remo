@@ -10,7 +10,7 @@
 
 ## Development Status
 
-### [Cloud API](https://swagger.nature.global/)
+### [Cloud API](https://swagger.nature.global/) (Base URL: `api.nature.global/`)
 
 Status | HTTP Method | Endpoint | API
 --- | --- | --- | ---
@@ -37,7 +37,7 @@ Status | HTTP Method | Endpoint | API
 ⚡️ | POST | `/1/devices/{device}/temperature_offset` | `update_temperature_offset`
 ⚡️ | POST | `/1/devices/{device}/humidity_offset` | `update_humidity_offset`
 
-### [Local API](https://local.swagger.nature.global/)
+### [Local API](https://local.swagger.nature.global/) (Base URL: `remo.local/`)
 
 Status | HTTP Method | Endpoint | API
 --- | --- | --- | ---
