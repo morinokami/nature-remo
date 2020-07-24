@@ -459,7 +459,7 @@ class EchonetLitePropertySchema(Schema):
 class ApplianceSchema(Schema):
     id = fields.Str()
     device = fields.Nested(DeviceCoreSchema)
-    model = fields.Nested(ApplianceModelSchema)
+    model = fields.Nested(ApplianceModelSchema, allow_none=True)
     nickname = fields.Str()
     image = fields.Str()
     type = fields.Str()
