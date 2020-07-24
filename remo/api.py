@@ -263,7 +263,6 @@ class NatureRemoAPI:
         if not resp.ok:
             raise NatureRemoError(build_error_message(resp))
 
-    # TODO
     def send_light_infrared_signal(self, appliance: str, button: str):
         """Send light infrared signal.
 
@@ -271,8 +270,10 @@ class NatureRemoAPI:
             appliance: Appliance ID.
             button: Button name.
         """
-        endpoint = f"/1/appliances/{appliance}/light"  # noqa: F841
-        raise NotImplementedError
+        endpoint = f"/1/appliances/{appliance}/light"
+        resp = self.__request(endpoint, HTTPMethod.POST, {"button": button})
+        if not resp.ok:
+            raise NatureRemoError(build_error_message(resp))
 
     def get_signals(self, appliance: str) -> List[Signal]:
         """Fetch signals registered under this appliance.

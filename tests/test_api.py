@@ -569,6 +569,42 @@ class TestAPI:
         )
 
     @responses.activate
+    def test_send_light_infrared_signal(self, api):
+        appliance = "appliance-id"
+        button = "button1"
+        url = f"{BASE_URL}/1/appliances/{appliance}/light"
+        responses.add(responses.POST, url, status=200)
+
+        try:
+            api.send_light_infrared_signal(appliance, button)
+        except NatureRemoError as e:
+            pytest.fail(str(e))
+
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
+        assert responses.calls[0].request.body == f"button={button}"
+
+    @responses.activate
+    def test_send_light_infrared_signal_raises(self, api):
+        appliance = "appliance-id"
+        button = "button1"
+        url = f"{BASE_URL}/1/appliances/{appliance}/light"
+        responses.add(
+            responses.POST,
+            url,
+            json={"code": 123456, "message": "Bad Request"},
+            status=400,
+        )
+
+        with pytest.raises(NatureRemoError) as excinfo:
+            api.send_light_infrared_signal(appliance, button)
+        assert (
+            str(excinfo.value)
+            == "HTTP Status Code: 400, "
+            + "Nature Remo Code: 123456, Message: Bad Request"
+        )
+
+    @responses.activate
     def test_get_signals(self, api):
         signal1 = {"id": "id-1", "name": "signal1", "image": "ico_signal"}
         signal2 = {"id": "id-2", "name": "signal2", "image": "ico_signal"}
