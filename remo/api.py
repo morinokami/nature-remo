@@ -325,7 +325,6 @@ class NatureRemoAPI:
         if not resp.ok:
             raise NatureRemoError(build_error_message(resp))
 
-    # TODO
     def update_signal(self, signal: str, name: str, image: str):
         """Update infrared signal.
 
@@ -334,8 +333,12 @@ class NatureRemoAPI:
             name: Signal name.
             image: Basename of the image file included in the app.
         """
-        endpoint = f"/1/signals/{signal}"  # noqa: F841
-        raise NotImplementedError
+        endpoint = f"/1/signals/{signal}"
+        resp = self.__request(
+            endpoint, HTTPMethod.POST, {"name": name, "image": image}
+        )
+        if not resp.ok:
+            raise NatureRemoError(build_error_message(resp))
 
     # TODO
     def delete_signal(self, signal: str):
