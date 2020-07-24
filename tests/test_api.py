@@ -171,10 +171,7 @@ class TestAPI:
             pytest.fail(str(e))
 
         assert len(responses.calls) == 1
-        assert (
-            responses.calls[0].request.url
-            == f"{BASE_URL}/1/devices/{device}/delete"
-        )
+        assert responses.calls[0].request.url == url
 
     @responses.activate
     def test_delete_device_raises(self, api):
@@ -818,6 +815,39 @@ class TestAPI:
 
         with pytest.raises(NatureRemoError) as excinfo:
             api.update_signal(signal, name, image)
+        assert (
+            str(excinfo.value)
+            == "HTTP Status Code: 400, "
+            + "Nature Remo Code: 123456, Message: Bad Request"
+        )
+
+    @responses.activate
+    def test_delete_signal(self, api):
+        signal = "signal-id"
+        url = f"{BASE_URL}/1/signals/{signal}/delete"
+        responses.add(responses.POST, url, status=200)
+
+        try:
+            api.delete_signal(signal)
+        except NatureRemoError as e:
+            pytest.fail(str(e))
+
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
+
+    @responses.activate
+    def test_delete_signal_raises(self, api):
+        signal = "signal-id"
+        url = f"{BASE_URL}/1/signals/{signal}/delete"
+        responses.add(
+            responses.POST,
+            url,
+            json={"code": 123456, "message": "Bad Request"},
+            status=400,
+        )
+
+        with pytest.raises(NatureRemoError) as excinfo:
+            api.delete_signal(signal)
         assert (
             str(excinfo.value)
             == "HTTP Status Code: 400, "
