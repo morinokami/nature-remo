@@ -18,7 +18,7 @@ Status | HTTP Method | Endpoint
 ⚡️ | POST | `/1/users/me`
 ⚡️ | GET | `/1/devices`
 🔥 | POST | `/1/detectappliance`
-🔥 | GET | `/1/appliances`
+⚡️ | GET | `/1/appliances`
 🔥 | POST | `/1/appliances`
 🔥 | POST | `/1/appliance_orders`
 🔥 | POST | `/1/appliances/{appliance}/delete`

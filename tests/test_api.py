@@ -1,6 +1,7 @@
 import pytest
 import responses
 
+from remo import Appliance
 from remo import Device
 from remo import NatureRemoAPI
 from remo import NatureRemoError
@@ -266,3 +267,91 @@ class TestAPI:
             == "HTTP Status Code: 400, "
             + "Nature Remo Code: 123456, Message: Bad Request"
         )
+
+    @responses.activate
+    def test_get_appliances(self, api):
+        id = "appliance-id"
+        device = {
+            "id": "device_id",
+            "name": "device_name",
+            "temperature_offset": 0,
+            "humidity_offset": 0,
+            "created_at": "2020-01-01T01:23:45Z",
+            "updated_at": "2020-01-01T01:23:45Z",
+            "firmware_version": "Remo/1.0.23",
+            "mac_address": "ab:cd:ef:01:23:45",
+            "serial_number": "1W111111111111",
+        }
+        model = {
+            "id": "appliance-modelid",
+            "manufacturer": "XXX",
+            "remote_name": "abc123",
+            "name": "XXX AC 001",
+            "image": "ico_appliance_model",
+        }
+        nickname = "appliance-nickname"
+        image = "ico_appliance"
+        type_ = "AC"
+        settings = {
+            "temp": "27",
+            "mode": "cool",
+            "vol": "auto",
+            "dir": "swing",
+            "button": "power-off",
+        }
+        aircon = {
+            "range": {
+                "modes": {
+                    "mode1": {
+                        "temp": ["1", "2", "3"],
+                        "vol": ["1", "auto"],
+                        "dir": ["1", "2"],
+                    },
+                    "mode2": {
+                        "temp": ["1", "2"],
+                        "vol": ["1", "2", "auto"],
+                        "dir": ["auto", "swing"],
+                    },
+                },
+                "fixedButtons": ["power-off"],
+            },
+            "tempUnit": "c",
+        }
+        signals = [
+            {"id": "signal-id", "name": "signal-name", "image": "ico_signal"}
+        ]
+        tv = {
+            "state": {"input": "t"},
+            "buttons": [
+                {
+                    "name": "button-name",
+                    "image": "ico_button",
+                    "label": "button_label",
+                }
+            ],
+        }
+        responses.add(
+            responses.GET,
+            f"{BASE_URL}/1/appliances",
+            json=[
+                {
+                    "id": id,
+                    "device": device,
+                    "model": model,
+                    "nickname": nickname,
+                    "image": image,
+                    "type": type_,
+                    "settings": settings,
+                    "aircon": aircon,
+                    "signals": signals,
+                    "tv": tv,
+                }
+            ],
+            status=200,
+        )
+
+        appliances = api.get_appliances()
+
+        assert type(appliances) is list
+        assert len(appliances) == 1
+        assert all(type(a) is Appliance for a in appliances)

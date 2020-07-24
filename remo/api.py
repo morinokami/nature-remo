@@ -3,14 +3,13 @@ from enum import Enum
 from typing import List
 
 import requests
-from marshmallow import EXCLUDE
 
 from .__version__ import __url__
 from .__version__ import __version__
 from .errors import build_error_message
 from .errors import NatureRemoError
 from .models import Appliance
-from .models import ApplianceSchema  # noqa: F401
+from .models import ApplianceSchema
 from .models import Device
 from .models import DeviceSchema
 from .models import Signal
@@ -68,7 +67,7 @@ class NatureRemoAPI:
         endpoint = "/1/users/me"
         resp = self.__request(endpoint, HTTPMethod.GET)
         json = self.__get_json(resp)
-        return UserSchema().load(json, unknown=EXCLUDE)
+        return UserSchema().load(json)
 
     def update_user(self, nickname: str) -> User:
         """Update authenticated user's information.
@@ -84,7 +83,7 @@ class NatureRemoAPI:
             endpoint, HTTPMethod.POST, {"nickname": nickname}
         )
         json = self.__get_json(resp)
-        return UserSchema().load(json, unknown=EXCLUDE)
+        return UserSchema().load(json)
 
     def get_devices(self) -> List[Device]:
         """Fetch the list of Remo devices the user has access to.
@@ -95,7 +94,7 @@ class NatureRemoAPI:
         endpoint = "/1/devices"
         resp = self.__request(endpoint, HTTPMethod.GET)
         json = self.__get_json(resp)
-        return DeviceSchema(many=True, unknown=EXCLUDE).load(json)
+        return DeviceSchema(many=True).load(json)
 
     def update_device(self, device: str, name: str):
         """Update Remo.
@@ -144,15 +143,16 @@ class NatureRemoAPI:
         if not resp.ok:
             raise NatureRemoError(build_error_message(resp))
 
-    # TODO
     def get_appliances(self) -> List[Appliance]:
         """Fetch the list of appliances.
 
         Returns:
             A list of Appliance objects.
         """
-        endpoint = "​/1​/appliances"  # noqa: F841
-        raise NotImplementedError
+        endpoint = "/1/appliances"
+        resp = self.__request(endpoint, HTTPMethod.GET)
+        json = self.__get_json(resp)
+        return ApplianceSchema(many=True).load(json)
 
     # TODO
     def create_appliance(
