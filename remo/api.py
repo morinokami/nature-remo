@@ -13,7 +13,7 @@ from .models import ApplianceSchema
 from .models import Device
 from .models import DeviceSchema
 from .models import Signal
-from .models import SignalSchema  # noqa: F401
+from .models import SignalSchema
 from .models import User
 from .models import UserSchema
 
@@ -258,15 +258,16 @@ class NatureRemoAPI:
         endpoint = f"/1/appliances/{appliance}/light"  # noqa: F841
         raise NotImplementedError
 
-    # TODO
     def get_signals(self, appliance: str) -> List[Signal]:
         """Fetch signals registered under this appliance.
 
         Args:
             appliance: Appliance ID.
         """
-        endpoint = f"/1/appliances/{appliance}/signals"  # noqa: F841
-        raise NotImplementedError
+        endpoint = f"/1/appliances/{appliance}/signals"
+        resp = self.__request(endpoint, HTTPMethod.GET)
+        json = self.__get_json(resp)
+        return SignalSchema(many=True).load(json)
 
     # TODO
     def create_signal(
