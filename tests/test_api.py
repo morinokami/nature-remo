@@ -1,3 +1,5 @@
+import urllib
+
 import pytest
 import responses
 
@@ -393,7 +395,7 @@ class TestAPI:
                 "aircon": None,
                 "signals": [],
             },
-            status=200,
+            status=201,
         )
 
         appliance = api.create_appliance(device_id, nickname, image)
@@ -402,6 +404,12 @@ class TestAPI:
         assert appliance.id == appliance_id
         assert appliance.nickname == nickname
         assert appliance.image == image
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
+        assert (
+            responses.calls[0].request.body
+            == f"device={device_id}&nickname={nickname}&image={image}"
+        )
 
     @responses.activate
     def test_create_appliance_raises(self, api):
@@ -426,8 +434,6 @@ class TestAPI:
 
     @responses.activate
     def test_update_appliance_orders(self, api):
-        import urllib
-
         url = f"{BASE_URL}/1/appliance_orders"
         responses.add(
             responses.POST, url, status=200,
@@ -678,14 +684,63 @@ class TestAPI:
     def test_get_signals(self, api):
         signal1 = {"id": "id-1", "name": "signal1", "image": "ico_signal"}
         signal2 = {"id": "id-2", "name": "signal2", "image": "ico_signal"}
-        appliance_id = "appliance-id"
-        url = f"{BASE_URL}/1/appliances/{appliance_id}/signals"
+        appliance = "appliance-id"
+        url = f"{BASE_URL}/1/appliances/{appliance}/signals"
         responses.add(responses.GET, url, json=[signal1, signal2], status=200)
 
-        signals = api.get_signals(appliance_id)
+        signals = api.get_signals(appliance)
 
         assert type(signals) is list
         assert len(signals) == 2
         assert all(type(s) is Signal for s in signals)
         assert len(responses.calls) == 1
         assert responses.calls[0].request.url == url
+
+    @responses.activate
+    def test_create_signal(self, api):
+        appliance = "appliance_id"
+        name = "signal1"
+        message = '{"freq": 38, "data": [2523, 2717, 786], "format": "us"}'
+        image = "ico_signal"
+        url = f"{BASE_URL}/1/appliances/{appliance}/signals"
+        responses.add(
+            responses.POST,
+            url,
+            json={"id": "signal-id", "name": name, "image": image},
+            status=201,
+        )
+
+        signal = api.create_signal(appliance, name, message, image)
+
+        assert type(signal) is Signal
+        assert signal.name == name
+        assert signal.image == image
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
+        assert (
+            responses.calls[0].request.body
+            == f"name={name}&message={urllib.parse.quote_plus(message)}&"
+            + f"image={image}"
+        )
+
+    @responses.activate
+    def test_create_signal_raises(self, api):
+        appliance = "appliance_id"
+        name = "signal1"
+        message = '{"freq": 38, "data": [2523, 2717, 786], "format": "us"}'
+        image = "ico_signal"
+        url = f"{BASE_URL}/1/appliances/{appliance}/signals"
+        responses.add(
+            responses.POST,
+            url,
+            json={"code": 123456, "message": "Bad Request"},
+            status=400,
+        )
+
+        with pytest.raises(NatureRemoError) as excinfo:
+            api.create_signal(appliance, name, message, image)
+        assert (
+            str(excinfo.value)
+            == "HTTP Status Code: 400, "
+            + "Nature Remo Code: 123456, Message: Bad Request"
+        )

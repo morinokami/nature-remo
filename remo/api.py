@@ -292,7 +292,6 @@ class NatureRemoAPI:
         json = self.__get_json(resp)
         return SignalSchema(many=True).load(json)
 
-    # TODO
     def create_signal(
         self, appliance: str, name: str, message: str, image: str
     ) -> Signal:
@@ -305,8 +304,14 @@ class NatureRemoAPI:
               Includes "data", "freq" and "format" keys.
             image: Basename of the image file included in the app.
         """
-        endpoint = f"/1/appliances/{appliance}/signals"  # noqa: F841
-        raise NotImplementedError
+        endpoint = f"/1/appliances/{appliance}/signals"
+        resp = self.__request(
+            endpoint,
+            HTTPMethod.POST,
+            {"name": name, "message": message, "image": image},
+        )
+        json = self.__get_json(resp)
+        return SignalSchema().load(json)
 
     # TODO
     def update_signal_orders(self, appliance: str, signals: str):
