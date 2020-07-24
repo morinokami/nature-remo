@@ -396,6 +396,47 @@ class TestAPI:
         )
 
     @responses.activate
+    def test_update_appliance(self, api):
+        appliance = "appliance-id"
+        nickname = "appliance-nickname"
+        image = "ico_nickname"
+        url = f"{BASE_URL}/1/appliances/{appliance}"
+        responses.add(responses.POST, url, status=200)
+
+        try:
+            api.update_appliance(appliance, nickname, image)
+        except NatureRemoError as e:
+            pytest.fail(str(e))
+
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
+        assert (
+            responses.calls[0].request.body
+            == f"nickname={nickname}&image={image}"
+        )
+
+    @responses.activate
+    def test_update_appliance_raises(self, api):
+        appliance = "appliance-id"
+        nickname = "appliance-nickname"
+        image = "ico_nickname"
+        url = f"{BASE_URL}/1/appliances/{appliance}"
+        responses.add(
+            responses.POST,
+            url,
+            json={"code": 123456, "message": "Bad Request"},
+            status=400,
+        )
+
+        with pytest.raises(NatureRemoError) as excinfo:
+            api.update_appliance(appliance, nickname, image)
+        assert (
+            str(excinfo.value)
+            == "HTTP Status Code: 400, "
+            + "Nature Remo Code: 123456, Message: Bad Request"
+        )
+
+    @responses.activate
     def test_get_signals(self, api):
         signal1 = {"id": "id-1", "name": "signal1", "image": "ico_signal"}
         signal2 = {"id": "id-2", "name": "signal2", "image": "ico_signal"}

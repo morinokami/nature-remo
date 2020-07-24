@@ -199,7 +199,6 @@ class NatureRemoAPI:
         endpoint = f"/1/appliances/{appliance}/delete"  # noqa: F841
         raise NotImplementedError
 
-    # TODO
     def update_appliance(
         self, appliance: str, nickname: str, image: str
     ) -> Appliance:
@@ -210,8 +209,12 @@ class NatureRemoAPI:
             nickname: Appliance name.
             image: Basename of the image file included in the app.
         """
-        endpoint = f"/1/appliances/{appliance}"  # noqa: F841
-        raise NotImplementedError
+        endpoint = f"/1/appliances/{appliance}"
+        resp = self.__request(
+            endpoint, HTTPMethod.POST, {"nickname": nickname, "image": image}
+        )
+        if not resp.ok:
+            raise NatureRemoError(build_error_message(resp))
 
     # TODO
     def update_aircon_settings(
