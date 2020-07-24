@@ -216,12 +216,11 @@ class NatureRemoAPI:
         if not resp.ok:
             raise NatureRemoError(build_error_message(resp))
 
-    # TODO
     def update_aircon_settings(
         self,
         appliance: str,
-        temperature: str,
         operation_mode: str,
+        temperature: str,
         air_volume: str,
         air_direction: str,
         button: str,
@@ -230,14 +229,26 @@ class NatureRemoAPI:
 
         Args:
             appliance: Appliance ID.
-            temperature: Temperature.
             operation_mode: AC operation mode.
+            temperature: Temperature.
             air_volume: AC air volume.
             air_direction: AC air direction.
             button: Button.
         """
-        endpoint = f"/1/appliances/{appliance}/aircon_settings"  # noqa: F841
-        raise NotImplementedError
+        endpoint = f"/1/appliances/{appliance}/aircon_settings"
+        resp = self.__request(
+            endpoint,
+            HTTPMethod.POST,
+            {
+                "operation_mode": operation_mode,
+                "temperature": temperature,
+                "air_volume": air_volume,
+                "air_direction": air_direction,
+                "button": button,
+            },
+        )
+        if not resp.ok:
+            raise NatureRemoError(build_error_message(resp))
 
     def send_tv_infrared_signal(self, appliance: str, button: str):
         """Send tv infrared signal.

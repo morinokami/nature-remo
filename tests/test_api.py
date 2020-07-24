@@ -437,6 +437,69 @@ class TestAPI:
         )
 
     @responses.activate
+    def test_update_aircon_settings(self, api):
+        appliance = "appliance-id"
+        operation_mode = "cool"
+        temperature = "25"
+        air_volume = "1"
+        air_direction = "auto"
+        button = "power-off"
+        url = f"{BASE_URL}/1/appliances/{appliance}/aircon_settings"
+        responses.add(responses.POST, url, status=200)
+
+        try:
+            api.update_aircon_settings(
+                appliance,
+                operation_mode,
+                temperature,
+                air_volume,
+                air_direction,
+                button,
+            )
+        except NatureRemoError as e:
+            pytest.fail(str(e))
+
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
+        assert (
+            responses.calls[0].request.body
+            == f"operation_mode={operation_mode}&temperature={temperature}&"
+            + f"air_volume={air_volume}&air_direction={air_direction}"
+            + f"&button={button}"
+        )
+
+    @responses.activate
+    def test_update_aircon_settings_raises(self, api):
+        appliance = "appliance-id"
+        operation_mode = "cool"
+        temperature = "25"
+        air_volume = "1"
+        air_direction = "auto"
+        button = "power-off"
+        url = f"{BASE_URL}/1/appliances/{appliance}/aircon_settings"
+        responses.add(
+            responses.POST,
+            url,
+            json={"code": 123456, "message": "Bad Request"},
+            status=400,
+        )
+
+        with pytest.raises(NatureRemoError) as excinfo:
+            api.update_aircon_settings(
+                appliance,
+                operation_mode,
+                temperature,
+                air_volume,
+                air_direction,
+                button,
+            )
+        assert (
+            str(excinfo.value)
+            == "HTTP Status Code: 400, "
+            + "Nature Remo Code: 123456, Message: Bad Request"
+        )
+
+    @responses.activate
     def test_send_tv_infrared_signal(self, api):
         appliance = "appliance-id"
         button = "button1"

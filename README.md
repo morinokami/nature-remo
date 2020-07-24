@@ -23,7 +23,7 @@ Status | HTTP Method | Endpoint | API
 ⚡️ | POST | `/1/appliance_orders` | `update_appliance_orders`
 🔥 | POST | `/1/appliances/{appliance}/delete` | `delete_appliance`
 ⚡️ | POST | `/1/appliances/{appliance}` | `update_appliance`
-🔥 | POST | `/1/appliances/{appliance}/aircon_settings` | `update_aircon_settings`
+⚡ | POST | `/1/appliances/{appliance}/aircon_settings` | `update_aircon_settings`
 ⚡️ | POST | `/1/appliances/{appliance}/tv` | `send_tv_infrared_signal`
 🔥 | POST | `/1/appliances/{appliance}/light` | `send_light_infrared_signal`
 ⚡️ | GET | `/1/appliances/{appliance}/signals` | `get_signals`
