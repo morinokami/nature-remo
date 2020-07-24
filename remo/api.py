@@ -239,7 +239,6 @@ class NatureRemoAPI:
         endpoint = f"/1/appliances/{appliance}/aircon_settings"  # noqa: F841
         raise NotImplementedError
 
-    # TODO
     def send_tv_infrared_signal(self, appliance: str, button: str):
         """Send tv infrared signal.
 
@@ -247,8 +246,10 @@ class NatureRemoAPI:
             appliance: Appliance ID.
             button: Button name.
         """
-        endpoint = f"/1/appliances/{appliance}/tv"  # noqa: F841
-        raise NotImplementedError
+        endpoint = f"/1/appliances/{appliance}/tv"
+        resp = self.__request(endpoint, HTTPMethod.POST, {"button": button})
+        if not resp.ok:
+            raise NatureRemoError(build_error_message(resp))
 
     # TODO
     def send_light_infrared_signal(self, appliance: str, button: str):
