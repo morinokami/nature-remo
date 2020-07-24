@@ -189,15 +189,16 @@ class NatureRemoAPI:
         if not resp.ok:
             raise NatureRemoError(build_error_message(resp))
 
-    # TODO
     def delete_appliance(self, appliance: str):
         """Delete appliance.
 
         Args:
             appliance: Appliance ID.
         """
-        endpoint = f"/1/appliances/{appliance}/delete"  # noqa: F841
-        raise NotImplementedError
+        endpoint = f"/1/appliances/{appliance}/delete"
+        resp = self.__request(endpoint, HTTPMethod.POST)
+        if not resp.ok:
+            raise NatureRemoError(build_error_message(resp))
 
     def update_appliance(
         self, appliance: str, nickname: str, image: str

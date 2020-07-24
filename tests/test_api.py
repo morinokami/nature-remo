@@ -396,6 +396,39 @@ class TestAPI:
         )
 
     @responses.activate
+    def test_delete_appliance(self, api):
+        appliance = "appliance-id"
+        url = f"{BASE_URL}/1/appliances/{appliance}/delete"
+        responses.add(responses.POST, url, status=200)
+
+        try:
+            api.delete_appliance(appliance)
+        except NatureRemoError as e:
+            pytest.fail(str(e))
+
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
+
+    @responses.activate
+    def test_delete_appliance_raises(self, api):
+        appliance = "appliance-id"
+        url = f"{BASE_URL}/1/appliances/{appliance}/delete"
+        responses.add(
+            responses.POST,
+            url,
+            json={"code": 123456, "message": "Bad Request"},
+            status=400,
+        )
+
+        with pytest.raises(NatureRemoError) as excinfo:
+            api.delete_appliance(appliance)
+        assert (
+            str(excinfo.value)
+            == "HTTP Status Code: 400, "
+            + "Nature Remo Code: 123456, Message: Bad Request"
+        )
+
+    @responses.activate
     def test_update_appliance(self, api):
         appliance = "appliance-id"
         nickname = "appliance-nickname"
