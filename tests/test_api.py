@@ -5,6 +5,7 @@ from remo import Appliance
 from remo import Device
 from remo import NatureRemoAPI
 from remo import NatureRemoError
+from remo import Signal
 from remo import User
 
 
@@ -39,9 +40,10 @@ class TestAPI:
     def test_get_user(self, api):
         user_id = "user-id-123-abc"
         user_nickname = "lorem ipsum"
+        url = f"{BASE_URL}/1/users/me"
         responses.add(
             responses.GET,
-            f"{BASE_URL}/1/users/me",
+            url,
             json={"id": user_id, "nickname": user_nickname},
             status=200,
         )
@@ -49,14 +51,17 @@ class TestAPI:
         user = api.get_user()
 
         assert type(user) is User
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
 
     @responses.activate
     def test_update_user(self, api):
         user_id = "user-id-123-abc"
         user_nickname = "lorem ipsum updated"
+        url = f"{BASE_URL}/1/users/me"
         responses.add(
             responses.POST,
-            f"{BASE_URL}/1/users/me",
+            url,
             json={"id": user_id, "nickname": user_nickname},
             status=200,
         )
@@ -66,6 +71,8 @@ class TestAPI:
         assert type(user) is User
         assert user.id == user_id
         assert user.nickname == user_nickname
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
 
     @responses.activate
     def test_get_devices(self, api):
@@ -81,9 +88,10 @@ class TestAPI:
         il_val = 0
         mo_val = 1
         te_val = 25.149109
+        url = f"{BASE_URL}/1/devices"
         responses.add(
             responses.GET,
-            f"{BASE_URL}/1/devices",
+            url,
             json=[
                 {
                     "id": device_id,
@@ -111,6 +119,8 @@ class TestAPI:
         assert type(devices) is list
         assert len(devices) == 1
         assert all(type(d) is Device for d in devices)
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
 
     @responses.activate
     def test_update_device(self, api):
@@ -365,3 +375,38 @@ class TestAPI:
             responses.calls[0].request.body
             == f"appliances={urllib.parse.quote(appliances)}"
         )
+
+    @responses.activate
+    def test_update_appliance_orders_raises(self, api):
+        url = f"{BASE_URL}/1/appliance_orders"
+        responses.add(
+            responses.POST,
+            url,
+            json={"code": 123456, "message": "Bad Request"},
+            status=400,
+        )
+
+        appliances = "id-xxx,id-yyy,id-zzz"
+        with pytest.raises(NatureRemoError) as excinfo:
+            api.update_appliance_orders(appliances)
+        assert (
+            str(excinfo.value)
+            == "HTTP Status Code: 400, "
+            + "Nature Remo Code: 123456, Message: Bad Request"
+        )
+
+    @responses.activate
+    def test_get_signals(self, api):
+        signal1 = {"id": "id-1", "name": "signal1", "image": "ico_signal"}
+        signal2 = {"id": "id-2", "name": "signal2", "image": "ico_signal"}
+        appliance_id = "appliance-id"
+        url = f"{BASE_URL}/1/appliances/{appliance_id}/signals"
+        responses.add(responses.GET, url, json=[signal1, signal2], status=200)
+
+        signals = api.get_signals(appliance_id)
+
+        assert type(signals) is list
+        assert len(signals) == 2
+        assert all(type(s) is Signal for s in signals)
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
