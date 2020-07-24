@@ -20,7 +20,7 @@ Status | HTTP Method | Endpoint
 🔥 | POST | `/1/detectappliance`
 ⚡️ | GET | `/1/appliances`
 🔥 | POST | `/1/appliances`
-🔥 | POST | `/1/appliance_orders`
+⚡️ | POST | `/1/appliance_orders`
 🔥 | POST | `/1/appliances/{appliance}/delete`
 🔥 | POST | `/1/appliances/{appliance}`
 🔥 | POST | `/1/appliances/{appliance}/aircon_settings`
