@@ -351,12 +351,13 @@ class NatureRemoAPI:
         if not resp.ok:
             raise NatureRemoError(build_error_message(resp))
 
-    # TODO
     def send_signal(self, signal: str):
         """Send infrared signal.
 
         Args:
             signal: Signal ID.
         """
-        endpoint = f"​/1​/signals​/{signal}​/send"  # noqa: F841
-        raise NotImplementedError
+        endpoint = f"/1/signals/{signal}/send"
+        resp = self.__request(endpoint, HTTPMethod.POST)
+        if not resp.ok:
+            raise NatureRemoError(build_error_message(resp))

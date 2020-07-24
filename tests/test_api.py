@@ -853,3 +853,36 @@ class TestAPI:
             == "HTTP Status Code: 400, "
             + "Nature Remo Code: 123456, Message: Bad Request"
         )
+
+    @responses.activate
+    def test_send_signal(self, api):
+        signal = "signal-id"
+        url = f"{BASE_URL}/1/signals/{signal}/send"
+        responses.add(responses.POST, url, status=200)
+
+        try:
+            api.send_signal(signal)
+        except NatureRemoError as e:
+            pytest.fail(str(e))
+
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
+
+    @responses.activate
+    def test_send_signal_raises(self, api):
+        signal = "signal-id"
+        url = f"{BASE_URL}/1/signals/{signal}/send"
+        responses.add(
+            responses.POST,
+            url,
+            json={"code": 123456, "message": "Bad Request"},
+            status=400,
+        )
+
+        with pytest.raises(NatureRemoError) as excinfo:
+            api.send_signal(signal)
+        assert (
+            str(excinfo.value)
+            == "HTTP Status Code: 400, "
+            + "Nature Remo Code: 123456, Message: Bad Request"
+        )
