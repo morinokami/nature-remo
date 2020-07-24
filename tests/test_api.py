@@ -355,6 +355,76 @@ class TestAPI:
         assert all(type(a) is Appliance for a in appliances)
 
     @responses.activate
+    def test_create_appliance(self, api):
+        device_id = "device-id-123-abc"
+        device_name = "Remo"
+        temperature_offset = 0
+        humidity_offset = 0
+        dummy_datetime = "2020-01-01T01:23:45Z"
+        firmware_version = "Remo/1.0.23"
+        mac_address = "ab:cd:ef:01:23:45"
+        serial_number = "1W111111111111"
+        device = {
+            "id": device_id,
+            "name": device_name,
+            "temperature_offset": temperature_offset,
+            "humidity_offset": humidity_offset,
+            "created_at": dummy_datetime,
+            "updated_at": dummy_datetime,
+            "firmware_version": firmware_version,
+            "mac_address": mac_address,
+            "serial_number": serial_number,
+        }
+        appliance_id = "appliance-id"
+        nickname = "my-appliance"
+        image = "ico_appliance"
+        url = f"{BASE_URL}/1/appliances"
+        responses.add(
+            responses.POST,
+            url,
+            json={
+                "id": appliance_id,
+                "device": device,
+                "nickname": nickname,
+                "image": image,
+                "model": None,
+                "type": "IR",
+                "settings": None,
+                "aircon": None,
+                "signals": [],
+            },
+            status=200,
+        )
+
+        appliance = api.create_appliance(device_id, nickname, image)
+
+        assert type(appliance) is Appliance
+        assert appliance.id == appliance_id
+        assert appliance.nickname == nickname
+        assert appliance.image == image
+
+    @responses.activate
+    def test_create_appliance_raises(self, api):
+        device_id = "device-id-123-abc"
+        nickname = "my-appliance"
+        image = "ico_appliance"
+        url = f"{BASE_URL}/1/appliances"
+        responses.add(
+            responses.POST,
+            url,
+            json={"code": 123456, "message": "Bad Request"},
+            status=400,
+        )
+
+        with pytest.raises(NatureRemoError) as excinfo:
+            api.create_appliance(device_id, nickname, image)
+        assert (
+            str(excinfo.value)
+            == "HTTP Status Code: 400, "
+            + "Nature Remo Code: 123456, Message: Bad Request"
+        )
+
+    @responses.activate
     def test_update_appliance_orders(self, api):
         import urllib
 

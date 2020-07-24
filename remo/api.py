@@ -154,11 +154,10 @@ class NatureRemoAPI:
         json = self.__get_json(resp)
         return ApplianceSchema(many=True).load(json)
 
-    # TODO
     def create_appliance(
         self,
-        nickname: str,
         device: str,
+        nickname: str,
         image: str,
         model: str = None,
         model_type: str = None,
@@ -166,15 +165,22 @@ class NatureRemoAPI:
         """Create a new appliance.
 
         Args:
-            nickname: Appliance name.
             device: Device ID.
+            nickname: Appliance name.
             image: Basename of the image file included in the app.
             model: ApplianceModel ID if the appliance we're trying to create
               is included in IRDB.
             model_type: Type of model.
         """
-        endpoint = "​/1​/appliances"  # noqa: F841
-        raise NotImplementedError
+        endpoint = "/1/appliances"
+        data = {"device": device, "nickname": nickname, "image": image}
+        if model:
+            data["model"] = model
+        if model_type:
+            data["model_type"] = model_type
+        resp = self.__request(endpoint, HTTPMethod.POST, data)
+        json = self.__get_json(resp)
+        return ApplianceSchema().load(json)
 
     def update_appliance_orders(self, appliances: str):
         """Reorder appliances.

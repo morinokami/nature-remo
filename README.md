@@ -19,7 +19,7 @@ Status | HTTP Method | Endpoint | API
 ⚡️ | GET | `/1/devices` | `get_devices`
 🔥 | POST | `/1/detectappliance` |
 ⚡️ | GET | `/1/appliances` | `get_appliances`
-🔥 | POST | `/1/appliances` | `create_appliance`
+⚡ | POST | `/1/appliances` | `create_appliance`
 ⚡️ | POST | `/1/appliance_orders` | `update_appliance_orders`
 ⚡ | POST | `/1/appliances/{appliance}/delete` | `delete_appliance`
 ⚡️ | POST | `/1/appliances/{appliance}` | `update_appliance`
