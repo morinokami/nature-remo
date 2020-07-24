@@ -176,15 +176,18 @@ class NatureRemoAPI:
         endpoint = "​/1​/appliances"  # noqa: F841
         raise NotImplementedError
 
-    # TODO
     def update_appliance_orders(self, appliances: str):
         """Reorder appliances.
 
         Args:
             appliances: List of all appliances' IDs comma separated.
         """
-        endpoint = "/1/appliance_orders"  # noqa: F841
-        raise NotImplementedError
+        endpoint = "/1/appliance_orders"
+        resp = self.__request(
+            endpoint, HTTPMethod.POST, {"appliances": appliances}
+        )
+        if not resp.ok:
+            raise NatureRemoError(build_error_message(resp))
 
     # TODO
     def delete_appliance(self, appliance: str):

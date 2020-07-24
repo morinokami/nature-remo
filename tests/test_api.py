@@ -116,9 +116,8 @@ class TestAPI:
     def test_update_device(self, api):
         device = "my-device"
         name = "natureremo"
-        responses.add(
-            responses.POST, f"{BASE_URL}/1/devices/{device}", status=200
-        )
+        url = f"{BASE_URL}/1/devices/{device}"
+        responses.add(responses.POST, url, status=200)
 
         try:
             api.update_device(device, name)
@@ -126,9 +125,7 @@ class TestAPI:
             pytest.fail(str(e))
 
         assert len(responses.calls) == 1
-        assert (
-            responses.calls[0].request.url == f"{BASE_URL}/1/devices/{device}"
-        )
+        assert responses.calls[0].request.url == url
         assert responses.calls[0].request.body == f"name={name}"
 
     @responses.activate
@@ -153,9 +150,8 @@ class TestAPI:
     @responses.activate
     def test_delete_device(self, api):
         device = "my-device"
-        responses.add(
-            responses.POST, f"{BASE_URL}/1/devices/{device}/delete", status=200
-        )
+        url = f"{BASE_URL}/1/devices/{device}/delete"
+        responses.add(responses.POST, url, status=200)
 
         try:
             api.delete_device(device)
@@ -190,10 +186,9 @@ class TestAPI:
     def test_update_temperature_offset(self, api):
         device = "my-device"
         offset = 10
+        url = f"{BASE_URL}/1/devices/{device}/temperature_offset"
         responses.add(
-            responses.POST,
-            f"{BASE_URL}/1/devices/{device}/temperature_offset",
-            status=200,
+            responses.POST, url, status=200,
         )
 
         try:
@@ -202,10 +197,7 @@ class TestAPI:
             pytest.fail(str(e))
 
         assert len(responses.calls) == 1
-        assert (
-            responses.calls[0].request.url
-            == f"{BASE_URL}/1/devices/{device}/temperature_offset"
-        )
+        assert responses.calls[0].request.url == url
         assert responses.calls[0].request.body == f"offset={offset}"
 
     @responses.activate
@@ -231,10 +223,9 @@ class TestAPI:
     def test_update_humidity_offset(self, api):
         device = "my-device"
         offset = 10
+        url = f"{BASE_URL}/1/devices/{device}/humidity_offset"
         responses.add(
-            responses.POST,
-            f"{BASE_URL}/1/devices/{device}/humidity_offset",
-            status=200,
+            responses.POST, url, status=200,
         )
 
         try:
@@ -243,10 +234,7 @@ class TestAPI:
             pytest.fail(str(e))
 
         assert len(responses.calls) == 1
-        assert (
-            responses.calls[0].request.url
-            == f"{BASE_URL}/1/devices/{device}/humidity_offset"
-        )
+        assert responses.calls[0].request.url == url
         assert responses.calls[0].request.body == f"offset={offset}"
 
     @responses.activate
@@ -355,3 +343,25 @@ class TestAPI:
         assert type(appliances) is list
         assert len(appliances) == 1
         assert all(type(a) is Appliance for a in appliances)
+
+    @responses.activate
+    def test_update_appliance_orders(self, api):
+        import urllib
+
+        url = f"{BASE_URL}/1/appliance_orders"
+        responses.add(
+            responses.POST, url, status=200,
+        )
+
+        appliances = "id-xxx,id-yyy,id-zzz"
+        try:
+            api.update_appliance_orders(appliances)
+        except NatureRemoError as e:
+            pytest.fail(str(e))
+
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
+        assert (
+            responses.calls[0].request.body
+            == f"appliances={urllib.parse.quote(appliances)}"
+        )
