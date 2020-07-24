@@ -2,6 +2,7 @@ import json
 from datetime import datetime
 from typing import List
 
+from marshmallow import EXCLUDE
 from marshmallow import fields
 from marshmallow import post_load
 from marshmallow import Schema
@@ -17,6 +18,9 @@ class NatureRemoModel:
 class UserSchema(Schema):
     id = fields.Str()
     nickname = fields.Str()
+
+    class Meta:
+        unknown = EXCLUDE
 
     @post_load
     def make_user(self, data, **kwargs):
@@ -48,6 +52,9 @@ class DeviceCoreSchema(Schema):
     firmware_version = fields.Str()
     mac_address = fields.Str()
     serial_number = fields.Str()
+
+    class Meta:
+        unknown = EXCLUDE
 
     @post_load
     def make_device_core(self, data, **kwargs):
@@ -103,6 +110,9 @@ class DeviceSchema(Schema):
     serial_number = fields.Str()
     newest_events = fields.Dict(fields.Str(), fields.Nested(SensorValueSchema))
 
+    class Meta:
+        unknown = EXCLUDE
+
     @post_load
     def make_device(self, data, **kwargs):
         return Device(**data)
@@ -157,6 +167,9 @@ class ApplianceModelSchema(Schema):
     name = fields.Str()
     image = fields.Str()
 
+    class Meta:
+        unknown = EXCLUDE
+
     @post_load
     def make_appliance_model(self, data, **kwargs):
         return ApplianceModel(**data)
@@ -194,6 +207,9 @@ class AirConParamsSchema(Schema):
     dir = fields.Str()
     button = fields.Str()
 
+    class Meta:
+        unknown = EXCLUDE
+
     @post_load
     def make_air_con_params(self, data, **kwargs):
         return AirConParams(**data)
@@ -220,6 +236,9 @@ class AirConRangeModeSchema(Schema):
     vol = fields.List(fields.Str())
     dir = fields.List(fields.Str())
 
+    class Meta:
+        unknown = EXCLUDE
+
     @post_load
     def make_air_con_range_mode(self, data, **kwargs):
         return AirConRangeMode(**data)
@@ -242,7 +261,10 @@ class AirConRangeMode(NatureRemoModel):
 
 class AirConRangeSchema(Schema):
     modes = fields.Dict(fields.Str(), fields.Nested(AirConRangeModeSchema))
-    fixed_buttons = fields.List(fields.Str())
+    fixedButtons = fields.List(fields.Str())
+
+    class Meta:
+        unknown = EXCLUDE
 
     @post_load
     def make_air_con_range(self, data, **kwargs):
@@ -250,21 +272,24 @@ class AirConRangeSchema(Schema):
 
 
 class AirConRange(NatureRemoModel):
-    def __init__(self, modes: dict, fixed_buttons: List[str]):
+    def __init__(self, modes: dict, fixedButtons: List[str]):
         self.modes = modes
-        self.fixed_buttons = fixed_buttons
+        self.fixedButtons = fixedButtons
         self.schema = AirConRangeSchema
 
     def __repr__(self):
         return (
             f"AirConRange(modes={self.modes}, "  # TODO
-            + f"fixed_buttons={json.dumps(self.fixed_buttons)})"
+            + f"fixedButtons={json.dumps(self.fixedButtons)})"
         )
 
 
 class AirConSchema(Schema):
     range = fields.Nested(AirConRangeSchema)
-    temp_unit = fields.Str()
+    tempUnit = fields.Str()
+
+    class Meta:
+        unknown = EXCLUDE
 
     @post_load
     def make_air_con(self, data, **kwparams):
@@ -272,19 +297,22 @@ class AirConSchema(Schema):
 
 
 class AirCon(NatureRemoModel):
-    def __init__(self, range: dict, temp_unit: str):
+    def __init__(self, range: dict, tempUnit: str):
         self.range = range
-        self.temp_unit = temp_unit
+        self.tempUnit = tempUnit
         self.schema = AirConSchema
 
     def __repr__(self):
-        return f'AirCon(range={self.range}, temp_unit="{self.temp_unit}")'
+        return f'AirCon(range={self.range}, tempUnit="{self.tempUnit}")'
 
 
 class SignalSchema(Schema):
     id = fields.Str()
     name = fields.Str()
     image = fields.Str()
+
+    class Meta:
+        unknown = EXCLUDE
 
     @post_load
     def make_signal(self, data, **kwargs):
@@ -307,6 +335,9 @@ class Signal(NatureRemoModel):
 class TVStateSchema(Schema):
     input = fields.Str()
 
+    class Meta:
+        unknown = EXCLUDE
+
     @post_load
     def make_tv_state(self, data, **kwargs):
         return TVState(**data)
@@ -325,6 +356,9 @@ class ButtonSchema(Schema):
     name = fields.Str()
     image = fields.Str()
     label = fields.Str()
+
+    class Meta:
+        unknown = EXCLUDE
 
     @post_load
     def make_button(self, data, **kwargs):
@@ -350,6 +384,9 @@ class TVSchema(Schema):
     state = fields.Nested(TVStateSchema)
     buttons = fields.List(fields.Nested(ButtonSchema))
 
+    class Meta:
+        unknown = EXCLUDE
+
     @post_load
     def make_tv(self, data, **kwargs):
         return TV(**data)
@@ -369,6 +406,9 @@ class LightStateSchema(Schema):
     brightness = fields.Str()
     power = fields.Str()
     last_button = fields.Str()
+
+    class Meta:
+        unknown = EXCLUDE
 
     @post_load
     def make_light_state(self, data, **kwargs):
@@ -392,6 +432,9 @@ class LightState(NatureRemoModel):
 class LightSchema(Schema):
     state = fields.Nested(LightStateSchema)
     buttons = fields.List(fields.Nested(ButtonSchema))
+
+    class Meta:
+        unknown = EXCLUDE
 
     @post_load
     def make_light(self, data, **kwargs):
@@ -420,12 +463,15 @@ class ApplianceSchema(Schema):
     nickname = fields.Str()
     image = fields.Str()
     type = fields.Str()
-    settings = fields.Nested(AirConParamsSchema)
-    aircon = fields.Nested(AirConSchema)
+    settings = fields.Nested(AirConParamsSchema, allow_none=True)
+    aircon = fields.Nested(AirConSchema, allow_none=True)
     signals = fields.List(fields.Nested(SignalSchema))
-    tv = fields.Nested(TVSchema)
+    tv = fields.Nested(TVSchema, required=False)
     light = fields.Nested(LightSchema, required=False)
     # smart_meter
+
+    class Meta:
+        unknown = EXCLUDE
 
     @post_load
     def make_appliance(self, data, **kwargs):
@@ -444,7 +490,7 @@ class Appliance(NatureRemoModel):
         settings: AirConParams,
         aircon: AirCon,
         signals: List[Signal],
-        tv: TV,
+        tv: TV = None,
         light: Light = None,
     ):
         self.id = id

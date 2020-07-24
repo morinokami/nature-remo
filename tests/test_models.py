@@ -235,8 +235,8 @@ def test_air_con_range():
             "dir": ["auto", "swing"],
         },
     }
-    fixed_buttons = ["power-off"]
-    data = {"modes": modes, "fixed_buttons": fixed_buttons}
+    fixedButtons = ["power-off"]
+    data = {"modes": modes, "fixedButtons": fixedButtons}
 
     air_con_range = AirConRangeSchema().load(data)
 
@@ -248,7 +248,7 @@ def test_air_con_range():
     assert air_con_range.modes["mode2"].temp == modes["mode2"]["temp"]
     assert air_con_range.modes["mode2"].vol == modes["mode2"]["vol"]
     assert air_con_range.modes["mode2"].dir == modes["mode2"]["dir"]
-    assert air_con_range.fixed_buttons == fixed_buttons
+    assert air_con_range.fixedButtons == fixedButtons
 
     assert air_con_range.as_json_string() == sorted_json(data)
     assert str(air_con_range)
@@ -269,10 +269,10 @@ def test_air_con():
     }
     range = {
         "modes": modes,
-        "fixed_buttons": ["power-off"],
+        "fixedButtons": ["power-off"],
     }
-    temp_unit = "c"
-    data = {"range": range, "temp_unit": temp_unit}
+    tempUnit = "c"
+    data = {"range": range, "tempUnit": tempUnit}
 
     air_con = AirConSchema().load(data)
 
@@ -284,8 +284,8 @@ def test_air_con():
     assert air_con.range.modes["mode2"].temp == modes["mode2"]["temp"]
     assert air_con.range.modes["mode2"].vol == modes["mode2"]["vol"]
     assert air_con.range.modes["mode2"].dir == modes["mode2"]["dir"]
-    assert air_con.range.fixed_buttons == range["fixed_buttons"]
-    assert air_con.temp_unit == temp_unit
+    assert air_con.range.fixedButtons == range["fixedButtons"]
+    assert air_con.tempUnit == tempUnit
 
     assert air_con.as_json_string() == sorted_json(data)
     assert str(air_con)
@@ -465,9 +465,9 @@ def test_appliance():
                     "dir": ["auto", "swing"],
                 },
             },
-            "fixed_buttons": ["power-off"],
+            "fixedButtons": ["power-off"],
         },
-        "temp_unit": "c",
+        "tempUnit": "c",
     }
     signals = [
         {"id": "signal-id", "name": "signal-name", "image": "ico_signal"}
@@ -545,10 +545,9 @@ def test_appliance():
         == aircon["range"]["modes"]["mode2"]["dir"]
     )
     assert (
-        appliance.aircon.range.fixed_buttons
-        == aircon["range"]["fixed_buttons"]
+        appliance.aircon.range.fixedButtons == aircon["range"]["fixedButtons"]
     )
-    assert appliance.aircon.temp_unit == aircon["temp_unit"]
+    assert appliance.aircon.tempUnit == aircon["tempUnit"]
     assert len(appliance.signals) == 1
     assert appliance.signals[0].id == signals[0]["id"]
     assert appliance.signals[0].name == signals[0]["name"]
