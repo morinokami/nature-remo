@@ -15,7 +15,7 @@ setuptools.setup(
     name=about["__name__"],
     version=about["__version__"],
     author=about["__author__"],
-    author_email=["__author_email__"],
+    author_email=about["__author_email__"],
     license=about["__license__"],
     description=about["__description__"],
     long_description=desc,
@@ -23,7 +23,7 @@ setuptools.setup(
     url=about["__url__"],
     keywords=["Nature Remo"],
     classifiers=[
-        "Development Status :: 1 - Planning",
+        "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python",
@@ -34,5 +34,5 @@ setuptools.setup(
         "Topic :: Internet",
     ],
     packages=setuptools.find_packages(exclude="tests"),
-    install_requires=["marshmallow", "requests"],
+    install_requires=["marshmallow==3.7.1", "requests==2.24.0"],
 )
