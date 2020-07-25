@@ -34,5 +34,5 @@ setuptools.setup(
         "Topic :: Internet",
     ],
     packages=setuptools.find_packages(exclude="tests"),
-    install_requires=["requests"],
+    install_requires=["marshmallow", "requests"],
 )
