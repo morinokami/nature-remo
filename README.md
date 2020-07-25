@@ -1,5 +1,8 @@
 # Python Client for Nature Remo API
 
+[![PyPI version](https://badge.fury.io/py/nature-remo.svg)](https://badge.fury.io/py/nature-remo)
+![Test](https://github.com/morinokami/nature-remo/workflows/Test/badge.svg)
+
 ## Introduction
 
 `nature-remo` is a Python client for the [Nature Remo API](https://developer.nature.global/).
