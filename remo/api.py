@@ -12,6 +12,8 @@ from .models import Appliance
 from .models import ApplianceSchema
 from .models import Device
 from .models import DeviceSchema
+from .models import IRSignal
+from .models import IRSignalSchema
 from .models import Signal
 from .models import SignalSchema
 from .models import User
@@ -33,7 +35,7 @@ class NatureRemoAPI:
         self.base_url = BASE_URL
 
     def __request(
-        self, endpoint: str, method: HTTPMethod, data: {} = None
+        self, endpoint: str, method: HTTPMethod, data: dict = None
     ) -> requests.models.Response:
         headers = {
             "Accept": "application/json",
@@ -361,3 +363,58 @@ class NatureRemoAPI:
         resp = self.__request(endpoint, HTTPMethod.POST)
         if not resp.ok:
             raise NatureRemoError(build_error_message(resp))
+
+
+class NatureRemoLocalAPI:
+    """Client for the Nature Remo Local API."""
+
+    def __init__(self, addr: str):
+        self.addr = addr
+
+    def __request(
+        self, endpoint: str, method: HTTPMethod, data: str = None
+    ) -> requests.models.Response:
+        headers = {
+            "Accept": "application/json",
+            "X-Requested-With": f"nature-remo/{__version__} ({__url__})",
+        }
+        url = f"http://{self.addr}{endpoint}"
+
+        if method == HTTPMethod.GET:
+            try:
+                return requests.get(url, headers=headers)
+            except requests.RequestException as e:
+                raise NatureRemoError(str(e))
+        elif method == HTTPMethod.POST:
+            try:
+                return requests.post(url, headers=headers, data=data)
+            except requests.RequestException as e:
+                raise NatureRemoError(str(e))
+
+    def __get_json(self, resp: requests.models.Response):
+        if resp.ok:
+            return resp.json()
+        raise NatureRemoError(f"{resp.status_code} {resp.reason}")
+
+    def get(self) -> IRSignal:
+        """Fetch the newest received IR signal.
+
+        Returns:
+            An IRSignal object.
+        """
+        endpoint = "/messages"
+        resp = self.__request(endpoint, HTTPMethod.GET)
+        json = self.__get_json(resp)
+        return IRSignalSchema().load(json)
+
+    def post(self, message: str):
+        """Emit IR signals provided by request body.
+
+        Args:
+            messages: JSON serialized object describing infrared signals.
+              Includes "data", "freq" and "format" keys.
+        """
+        endpoint = "/messages"
+        resp = self.__request(endpoint, HTTPMethod.POST, message)
+        if not resp.ok:
+            raise NatureRemoError(f"{resp.status_code} {resp.reason}")

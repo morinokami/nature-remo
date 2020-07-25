@@ -514,3 +514,27 @@ class Appliance(NatureRemoModel):
             + f"settings={self.settings}, aircon={self.aircon}, "
             + f"signals={self.signals}, tv={self.tv}, light={self.light})"
         )
+
+
+class IRSignalSchema(Schema):
+    freq = fields.Int()
+    data = fields.List(fields.Int())
+    format = fields.Str()
+
+    @post_load
+    def make_ir_signal(self, data, **kwargs):
+        return IRSignal(**data)
+
+
+class IRSignal(NatureRemoModel):
+    def __init__(self, freq: int, data: List[int], format: str):
+        self.freq = freq
+        self.data = data
+        self.format = format
+        self.schema = IRSignalSchema
+
+    def __repr__(self):
+        return (
+            f"IRSignal(freq={self.freq}, data={self.data}, "
+            + f'format="{self.format}")'
+        )

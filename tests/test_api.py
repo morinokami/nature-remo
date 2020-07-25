@@ -5,8 +5,10 @@ import responses
 
 from remo import Appliance
 from remo import Device
+from remo import IRSignal
 from remo import NatureRemoAPI
 from remo import NatureRemoError
+from remo import NatureRemoLocalAPI
 from remo import Signal
 from remo import User
 
@@ -16,8 +18,7 @@ BASE_URL = "https://api.nature.global"
 
 @pytest.fixture
 def api():
-    api = NatureRemoAPI("access_token")
-    return api
+    return NatureRemoAPI("access_token")
 
 
 class TestAPI:
@@ -886,3 +887,47 @@ class TestAPI:
             == "HTTP Status Code: 400, "
             + "Nature Remo Code: 123456, Message: Bad Request"
         )
+
+
+@pytest.fixture
+def local_api():
+    return NatureRemoLocalAPI("192.168.1.1")
+
+
+class TestLocalAPI:
+    @responses.activate
+    def test_get(self, local_api):
+        freq = 38
+        data = [0]
+        format = "us"
+        url = f"http://{local_api.addr}/messages"
+        responses.add(
+            responses.GET,
+            url,
+            json={"freq": freq, "data": data, "format": format},
+            status=200,
+        )
+
+        ir_signal = local_api.get()
+
+        assert type(ir_signal) is IRSignal
+        assert ir_signal.freq == freq
+        assert ir_signal.data == data
+        assert ir_signal.format == format
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
+
+    @responses.activate
+    def test_post(self, local_api):
+        message = '{"format": "us", "freq": 38, "data": [0]}'
+        url = f"http://{local_api.addr}/messages"
+        responses.add(responses.POST, url, status=200)
+
+        try:
+            local_api.post(message)
+        except NatureRemoError as e:
+            pytest.fail(str(e))
+
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
+        assert responses.calls[0].request.body == message
