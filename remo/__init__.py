@@ -7,6 +7,7 @@ from .__version__ import __name__
 from .__version__ import __url__
 from .__version__ import __version__
 from .api import NatureRemoAPI
+from .api import NatureRemoLocalAPI
 from .errors import NatureRemoError
 from .models import AirCon
 from .models import AirConParams
@@ -26,6 +27,8 @@ from .models import Device
 from .models import DeviceCore
 from .models import DeviceCoreSchema
 from .models import DeviceSchema
+from .models import IRSignal
+from .models import IRSignalSchema
 from .models import Light
 from .models import LightSchema
 from .models import LightState

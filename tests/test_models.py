@@ -11,6 +11,7 @@ from remo import ApplianceSchema
 from remo import ButtonSchema
 from remo import DeviceCoreSchema
 from remo import DeviceSchema
+from remo import IRSignalSchema
 from remo import LightSchema
 from remo import LightStateSchema
 from remo import SignalSchema
@@ -560,3 +561,21 @@ def test_appliance():
 
     assert appliance.as_json_string()
     assert str(appliance)
+
+
+def test_ir_signal():
+    freq = 38
+    data = [0]
+    format = "us"
+    signal_data = {"freq": freq, "data": data, "format": format}
+
+    signal = IRSignalSchema().load(signal_data)
+
+    assert signal.freq == freq
+    assert signal.data == data
+    assert signal.format == format
+
+    assert signal.as_json_string() == sorted_json(signal_data)
+    assert (
+        str(signal) == f'IRSignal(freq={freq}, data={data}, format="{format}")'
+    )

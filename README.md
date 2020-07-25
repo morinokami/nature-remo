@@ -41,8 +41,8 @@ Status | HTTP Method | Endpoint | API
 
 Status | HTTP Method | Endpoint | API
 --- | --- | --- | ---
-🔥 | GET | `/messages` |
-🔥 | POST | `/messages` |
+⚡️ | GET | `/messages` | `get`
+⚡️ | POST | `/messages` | `post`
 
 # How to Develop
 
