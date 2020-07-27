@@ -27,10 +27,21 @@ class HTTPMethod(Enum):
     POST = auto()
 
 
+def enable_debug_mode():
+    import logging
+    from http.client import HTTPConnection
+
+    HTTPConnection.debuglevel = 1
+    logging.basicConfig()
+    logging.getLogger().setLevel(logging.DEBUG)
+
+
 class NatureRemoAPI:
     """Client for the Nature Remo API."""
 
-    def __init__(self, access_token: str):
+    def __init__(self, access_token: str, debug: bool = False):
+        if debug:
+            enable_debug_mode()
         self.access_token = access_token
         self.base_url = BASE_URL
 
@@ -369,7 +380,9 @@ class NatureRemoAPI:
 class NatureRemoLocalAPI:
     """Client for the Nature Remo Local API."""
 
-    def __init__(self, addr: str):
+    def __init__(self, addr: str, debug: bool = False):
+        if debug:
+            enable_debug_mode()
         self.addr = addr
 
     def __request(
