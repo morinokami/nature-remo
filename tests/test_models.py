@@ -40,7 +40,7 @@ def test_user():
     assert user.nickname == user_nickname
 
     assert user.as_json_string() == sorted_json(data)
-    assert str(user) == f'User(id="{user_id}", nickname="{user_nickname}")'
+    assert str(user) == f"User(id='{user_id}', nickname='{user_nickname}')"
 
 
 def test_device_core():
@@ -168,8 +168,8 @@ def test_appliance_model():
     assert appliance_model.as_json_string() == sorted_json(data)
     assert (
         str(appliance_model)
-        == f'ApplianceModel(id="{id}", manufacturer="{manufacturer}", '
-        + f'remote_name="{remote_name}", name="{name}", image="{image}")'
+        == f"ApplianceModel(id='{id}', manufacturer='{manufacturer}', "
+        + f"remote_name='{remote_name}', name='{name}', image='{image}')"
     )
 
 
@@ -198,8 +198,8 @@ def test_air_con_params():
     assert air_con_params.as_json_string() == sorted_json(data)
     assert (
         str(air_con_params)
-        == f'AirConParams(temp="{temp}", mode="{mode}", vol="{vol}", '
-        + f'dir="{dir}", button="{button}")'
+        == f"AirConParams(temp='{temp}', mode='{mode}', vol='{vol}', "
+        + f"dir='{dir}', button='{button}')"
     )
 
 
@@ -218,8 +218,7 @@ def test_air_con_range_mode():
     assert air_con_range_mode.as_json_string() == sorted_json(data)
     assert (
         str(air_con_range_mode)
-        == f"AirConRangeMode(temp={json.dumps(temp)}, vol={json.dumps(vol)}, "
-        + f"dir={json.dumps(dir)})"
+        == f"AirConRangeMode(temp={temp}, vol={vol}, dir={dir})"
     )
 
 
@@ -305,7 +304,7 @@ def test_signal():
     assert signal.image == image
 
     assert signal.as_json_string() == sorted_json(data)
-    assert str(signal) == f'Signal(id="{id}", name="{name}", image="{image}")'
+    assert str(signal) == f"Signal(id='{id}', name='{name}', image='{image}')"
 
 
 def test_button():
@@ -323,7 +322,7 @@ def test_button():
     assert button.as_json_string() == sorted_json(data)
     assert (
         str(button)
-        == f'Button(name="{name}", image="{image}", label="{label}")'
+        == f"Button(name='{name}', image='{image}', label='{label}')"
     )
 
 
@@ -336,7 +335,7 @@ def test_tv_state():
     assert tv_state.input == input
 
     assert tv_state.as_json_string() == sorted_json(data)
-    assert str(tv_state) == f'TVState(input="{input}")'
+    assert str(tv_state) == f"TVState(input='{input}')"
 
 
 def test_tv():
@@ -361,9 +360,9 @@ def test_tv():
 
     assert tv.as_json_string() == sorted_json(data)
     assert str(tv) == (
-        f'TV(state=TVState(input="{state_input}"), '
-        + f'buttons=[Button(name="{btn_name}", image="{btn_image}", '
-        + f'label="{btn_label}")])'
+        f"TV(state=TVState(input='{state_input}'), "
+        f"buttons=[Button(name='{btn_name}', image='{btn_image}', "
+        f"label='{btn_label}')])"
     )
 
 
@@ -386,8 +385,8 @@ def test_light_state():
     assert light_state.as_json_string() == sorted_json(data)
     assert (
         str(light_state)
-        == f'LightState(brightness="{brightness}", power="{power}",'
-        + f' last_button="{last_button}")'
+        == f"LightState(brightness='{brightness}', power='{power}',"
+        + f" last_button='{last_button}')"
     )
 
 
@@ -577,5 +576,5 @@ def test_ir_signal():
 
     assert signal.as_json_string() == sorted_json(signal_data)
     assert (
-        str(signal) == f'IRSignal(freq={freq}, data={data}, format="{format}")'
+        str(signal) == f"IRSignal(freq={freq}, data={data}, format='{format}')"
     )

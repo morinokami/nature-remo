@@ -19,7 +19,7 @@ To create an instance of `remo.NatureRemoAPI` with your access token:
 
 ```py
 >>> from remo import NatureRemoAPI
->>> api = NatureRemoAPI("access_token")
+>>> api = NatureRemoAPI('access_token')
 ```
 
 To fetch the authenticated user's information:
@@ -54,7 +54,7 @@ To update air conditioner settings:
 
 ```py
 >>> aircon = appliances[0]
->>> api.update_aircon_settings(aircon.id, "cool", "27", "auto", "swing", "")
+>>> api.update_aircon_settings(aircon.id, 'cool', '27', 'auto', 'swing', '')
 ```
 
 To send a tv infrared signal:
@@ -63,7 +63,7 @@ To send a tv infrared signal:
 >>> appliances[1].type
 'TV'
 >>> tv = appliances[1]
->>> api.send_tv_infrared_signal(tv.id, "power")
+>>> api.send_tv_infrared_signal(tv.id, 'power')
 ```
 
 To create an instance of `remo.NatureRemoLocalAPI`:
@@ -77,7 +77,7 @@ To fetch the newest received IR signal:
 
 ```py
 >>> local_api.get()
-IRSignal(freq=38, data=[0], format="us")
+IRSignal(freq=38, data=[0], format='us')
 ```
 
 To emit an IR signal:
@@ -85,6 +85,35 @@ To emit an IR signal:
 ```py
 >>> message = '{"format": "us", "freq": 38, "data": [0]}'
 >>> local_api.post(message)
+```
+
+To print the underlying `urllib3` debug information:
+
+```py
+>>> api = NatureRemoAPI('access_token', debug=True)
+>>> api.get_user()
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): api.nature.global:443
+send: b'GET /1/users/me HTTP/1.1\r\nHost: api.nature.global\r\nUser-Agent: nature-remo/0.1.0 (https://github.com/morinokami/nature-remo)\r\nAccept-Encoding: gzip, deflate\r\nAccept: application/json\r\nConnection: keep-alive\r\nAuthorization: Bearer access_token\r\n\r\n'
+reply: 'HTTP/1.1 200 OK\r\n'
+header: Date: Mon, 27 Jul 2020 15:53:12 GMT
+header: Content-Type: application/json; charset=utf-8
+header: Content-Length: 72
+header: Connection: keep-alive
+header: Access-Control-Allow-Origin: *
+header: Cache-Control: no-cache, no-store, must-revalidate, private, max-age=0
+header: Expires: Thu, 01 Jan 1970 00:00:00 UTC
+header: Pragma: no-cache
+header: Strict-Transport-Security: max-age=86400
+header: Vary: Accept-Encoding
+header: X-Accel-Expires: 0
+header: X-Content-Type-Options: nosniff
+header: X-Frame-Options: SAMEORIGIN
+header: X-Rate-Limit-Limit: 30
+header: X-Rate-Limit-Remaining: 29
+header: X-Rate-Limit-Reset: 1595865300
+header: X-Xss-Protection: 1; mode=block
+DEBUG:urllib3.connectionpool:https://api.nature.global:443 "GET /1/users/me HTTP/1.1" 200 72
+User(id='user_id', nickname='your_nickname')
 ```
 
 ## Development Status
@@ -151,7 +180,7 @@ $ pip install nature-remo
 
 ```py
 >>> from remo import NatureRemoAPI
->>> api = NatureRemoAPI("access_token")
+>>> api = NatureRemoAPI('access_token')
 ```
 
 認証されたユーザーの情報を取得する:
@@ -186,7 +215,7 @@ Remo の機器リストを取得し、最初の機器の温度を表示する:
 
 ```py
 >>> aircon = appliances[0]
->>> api.update_aircon_settings(aircon.id, "cool", "27", "auto", "swing", "")
+>>> api.update_aircon_settings(aircon.id, 'cool', '27', 'auto', 'swing', '')
 ```
 
 テレビの赤外線を送信する:
@@ -209,7 +238,7 @@ Remo の機器リストを取得し、最初の機器の温度を表示する:
 
 ```py
 >>> local_api.get()
-IRSignal(freq=38, data=[0], format="us")
+IRSignal(freq=38, data=[0], format='us')
 ```
 
 赤外線を送出する:
@@ -217,4 +246,33 @@ IRSignal(freq=38, data=[0], format="us")
 ```py
 >>> message = '{"format": "us", "freq": 38, "data": [0]}'
 >>> local_api.post(message)
+```
+
+`urllib3`のデバッグ情報を出力する:
+
+```py
+>>> api = NatureRemoAPI('access_token', debug=True)
+>>> api.get_user()
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): api.nature.global:443
+send: b'GET /1/users/me HTTP/1.1\r\nHost: api.nature.global\r\nUser-Agent: nature-remo/0.1.0 (https://github.com/morinokami/nature-remo)\r\nAccept-Encoding: gzip, deflate\r\nAccept: application/json\r\nConnection: keep-alive\r\nAuthorization: Bearer access_token\r\n\r\n'
+reply: 'HTTP/1.1 200 OK\r\n'
+header: Date: Mon, 27 Jul 2020 15:53:12 GMT
+header: Content-Type: application/json; charset=utf-8
+header: Content-Length: 72
+header: Connection: keep-alive
+header: Access-Control-Allow-Origin: *
+header: Cache-Control: no-cache, no-store, must-revalidate, private, max-age=0
+header: Expires: Thu, 01 Jan 1970 00:00:00 UTC
+header: Pragma: no-cache
+header: Strict-Transport-Security: max-age=86400
+header: Vary: Accept-Encoding
+header: X-Accel-Expires: 0
+header: X-Content-Type-Options: nosniff
+header: X-Frame-Options: SAMEORIGIN
+header: X-Rate-Limit-Limit: 30
+header: X-Rate-Limit-Remaining: 29
+header: X-Rate-Limit-Reset: 1595865300
+header: X-Xss-Protection: 1; mode=block
+DEBUG:urllib3.connectionpool:https://api.nature.global:443 "GET /1/users/me HTTP/1.1" 200 72
+User(id='user_id', nickname='your_nickname')
 ```

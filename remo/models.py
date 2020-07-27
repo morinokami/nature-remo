@@ -1,4 +1,3 @@
-import json
 from datetime import datetime
 from typing import List
 
@@ -34,7 +33,7 @@ class User(NatureRemoModel):
         self.schema = UserSchema
 
     def __repr__(self):
-        return f'User(id="{self.id}", nickname="{self.nickname}")'
+        return f"User(id='{self.id}', nickname='{self.nickname}')"
 
 
 class SensorValueSchema(Schema):
@@ -87,14 +86,14 @@ class DeviceCore(NatureRemoModel):
 
     def __repr__(self):
         return (
-            f'Device(id="{self.id}", name="{self.name}", '
+            f"Device(id='{self.id}', name='{self.name}', "
             + f"temprature_offset={self.temperature_offset}, "
             + f"humidity_offset={self.humidity_offset}, "
             + f"created_at={repr(self.created_at)}, "
             + f"updated_at={repr(self.updated_at)}, "
-            + f'firmware_version="{self.firmware_version}", '
-            + f'mac_address="{self.mac_address}", '
-            + f'serial_number="{self.serial_number}")'
+            + f"firmware_version='{self.firmware_version}', "
+            + f"mac_address='{self.mac_address}', "
+            + f"serial_number='{self.serial_number}')"
         )
 
 
@@ -148,14 +147,14 @@ class Device(DeviceCore):
 
     def __repr__(self):
         return (
-            f'Device(id="{self.id}", name="{self.name}", '
+            f"Device(id='{self.id}', name='{self.name}', "
             + f"temprature_offset={self.temperature_offset}, "
             + f"humidity_offset={self.humidity_offset}, "
             + f"created_at={repr(self.created_at)}, "
             + f"updated_at={repr(self.updated_at)}, "
-            + f'firmware_version="{self.firmware_version}", '
-            + f'mac_address="{self.mac_address}", '
-            + f'serial_number="{self.serial_number}", '
+            + f"firmware_version='{self.firmware_version}', "
+            + f"mac_address='{self.mac_address}', "
+            + f"serial_number='{self.serial_number}', "
             + f"newest_events={self.newest_events})"
         )
 
@@ -193,10 +192,10 @@ class ApplianceModel(NatureRemoModel):
 
     def __repr__(self):
         return (
-            f'ApplianceModel(id="{self.id}", '
-            + f'manufacturer="{self.manufacturer}", '
-            + f'remote_name="{self.remote_name}", '
-            + f'name="{self.name}", image="{self.image}")'
+            f"ApplianceModel(id='{self.id}', "
+            + f"manufacturer='{self.manufacturer}', "
+            + f"remote_name='{self.remote_name}', "
+            + f"name='{self.name}', image='{self.image}')"
         )
 
 
@@ -226,8 +225,8 @@ class AirConParams(NatureRemoModel):
 
     def __repr__(self):
         return (
-            f'AirConParams(temp="{self.temp}", mode="{self.mode}", '
-            + f'vol="{self.vol}", dir="{self.dir}", button="{self.button}")'
+            f"AirConParams(temp='{self.temp}', mode='{self.mode}', "
+            + f"vol='{self.vol}', dir='{self.dir}', button='{self.button}')"
         )
 
 
@@ -252,10 +251,9 @@ class AirConRangeMode(NatureRemoModel):
         self.schema = AirConRangeModeSchema
 
     def __repr__(self):
-
         return (
-            f"AirConRangeMode(temp={json.dumps(self.temp)}, "
-            + f"vol={json.dumps(self.vol)}, dir={json.dumps(self.dir)})"
+            f"AirConRangeMode(temp={self.temp}, "
+            f"vol={self.vol}, dir={self.dir})"
         )
 
 
@@ -279,8 +277,8 @@ class AirConRange(NatureRemoModel):
 
     def __repr__(self):
         return (
-            f"AirConRange(modes={self.modes}, "  # TODO
-            + f"fixedButtons={json.dumps(self.fixedButtons)})"
+            f"AirConRange(modes={self.modes}, "
+            f"fixedButtons={self.fixedButtons})"
         )
 
 
@@ -328,28 +326,8 @@ class Signal(NatureRemoModel):
 
     def __repr__(self):
         return (
-            f'Signal(id="{self.id}", name="{self.name}", image="{self.image}")'
+            f"Signal(id='{self.id}', name='{self.name}', image='{self.image}')"
         )
-
-
-class TVStateSchema(Schema):
-    input = fields.Str()
-
-    class Meta:
-        unknown = EXCLUDE
-
-    @post_load
-    def make_tv_state(self, data, **kwargs):
-        return TVState(**data)
-
-
-class TVState(NatureRemoModel):
-    def __init__(self, input: str):
-        self.input = input
-        self.schema = TVStateSchema
-
-    def __repr__(self):
-        return f'TVState(input="{self.input}")'
 
 
 class ButtonSchema(Schema):
@@ -374,10 +352,30 @@ class Button(NatureRemoModel):
 
     def __repr__(self):
         return (
-            f'Button(name="{self.name}", '
-            + f'image="{self.image}", '
-            + f'label="{self.label}")'
+            f"Button(name='{self.name}', "
+            f"image='{self.image}', "
+            f"label='{self.label}')"
         )
+
+
+class TVStateSchema(Schema):
+    input = fields.Str()
+
+    class Meta:
+        unknown = EXCLUDE
+
+    @post_load
+    def make_tv_state(self, data, **kwargs):
+        return TVState(**data)
+
+
+class TVState(NatureRemoModel):
+    def __init__(self, input: str):
+        self.input = input
+        self.schema = TVStateSchema
+
+    def __repr__(self):
+        return f"TVState(input='{self.input}')"
 
 
 class TVSchema(Schema):
@@ -424,8 +422,8 @@ class LightState(NatureRemoModel):
 
     def __repr__(self):
         return (
-            f'LightState(brightness="{self.brightness}", '
-            + f'power="{self.power}", last_button="{self.last_button}")'
+            f"LightState(brightness='{self.brightness}', "
+            f"power='{self.power}', last_button='{self.last_button}')"
         )
 
 
@@ -508,11 +506,11 @@ class Appliance(NatureRemoModel):
 
     def __repr__(self):
         return (
-            f'Appliance(id="{self.id}", device={self.device}, '
-            + f'model={self.model}, nickname="{self.nickname}", '
-            + f'image="{self.image}", type="{self.type}", '
-            + f"settings={self.settings}, aircon={self.aircon}, "
-            + f"signals={self.signals}, tv={self.tv}, light={self.light})"
+            f"Appliance(id='{self.id}', device={self.device}, "
+            f"model={self.model}, nickname='{self.nickname}', "
+            f"image='{self.image}', type='{self.type}', "
+            f"settings={self.settings}, aircon={self.aircon}, "
+            f"signals={self.signals}, tv={self.tv}, light={self.light})"
         )
 
 
@@ -536,5 +534,5 @@ class IRSignal(NatureRemoModel):
     def __repr__(self):
         return (
             f"IRSignal(freq={self.freq}, data={self.data}, "
-            + f'format="{self.format}")'
+            f"format='{self.format}')"
         )
