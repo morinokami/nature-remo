@@ -228,11 +228,11 @@ class NatureRemoAPI:
     def update_aircon_settings(
         self,
         appliance: str,
-        operation_mode: str,
-        temperature: str,
-        air_volume: str,
-        air_direction: str,
-        button: str,
+        operation_mode: str = None,
+        temperature: str = None,
+        air_volume: str = None,
+        air_direction: str = None,
+        button: str = None,
     ):
         """Update air conditioner settings.
 
@@ -245,17 +245,18 @@ class NatureRemoAPI:
             button: Button.
         """
         endpoint = f"/1/appliances/{appliance}/aircon_settings"
-        resp = self.__request(
-            endpoint,
-            HTTPMethod.POST,
-            {
-                "operation_mode": operation_mode,
-                "temperature": temperature,
-                "air_volume": air_volume,
-                "air_direction": air_direction,
-                "button": button,
-            },
-        )
+        data = {}
+        if operation_mode:
+            data["operation_mode"] = operation_mode
+        if temperature:
+            data["temperature"] = temperature
+        if air_volume:
+            data["air_volume"] = air_volume
+        if air_direction:
+            data["air_direction"] = air_direction
+        if button:
+            data["button"] = button
+        resp = self.__request(endpoint, HTTPMethod.POST, data)
         if not resp.ok:
             raise NatureRemoError(build_error_message(resp))
 
