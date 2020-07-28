@@ -74,7 +74,7 @@ class NatureRemoAPI:
             elif method == HTTPMethod.POST:
                 return requests.post(url, headers=headers, data=data)
         except requests.RequestException as e:
-            raise NatureRemoError(str(e))
+            raise NatureRemoError(e)
 
     def __get_json(self, resp: requests.models.Response):
         self.__set_rate_limit(resp)
