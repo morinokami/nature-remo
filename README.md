@@ -87,7 +87,7 @@ To create an instance of `remo.NatureRemoLocalAPI`:
 To fetch the newest received IR signal:
 
 ```py
->>> local_api.get()
+>>> local_api.get_ir_signal()
 IRSignal(freq=38, data=[0], format='us')
 ```
 
@@ -95,7 +95,7 @@ To emit an IR signal:
 
 ```py
 >>> message = '{"format": "us", "freq": 38, "data": [0]}'
->>> local_api.post(message)
+>>> local_api.send_ir_signal(message)
 ```
 
 To print the underlying `urllib3` debug information:
@@ -160,8 +160,8 @@ Status | HTTP Method | Endpoint | API
 
 Status | HTTP Method | Endpoint | API
 --- | --- | --- | ---
-⚡️ | GET | `/messages` | `get`
-⚡️ | POST | `/messages` | `post`
+⚡️ | GET | `/messages` | `get_ir_signal`
+⚡️ | POST | `/messages` | `send_ir_signal`
 
 ## How to Develop
 
@@ -259,7 +259,7 @@ RateLimit(checked_at=datetime.datetime(2020, 7, 28, 8, 11, 4), limit=30, remaini
 受信した最新の赤外線信号を取得する:
 
 ```py
->>> local_api.get()
+>>> local_api.get_ir_signal()
 IRSignal(freq=38, data=[0], format='us')
 ```
 
@@ -267,7 +267,7 @@ IRSignal(freq=38, data=[0], format='us')
 
 ```py
 >>> message = '{"format": "us", "freq": 38, "data": [0]}'
->>> local_api.post(message)
+>>> local_api.send_ir_signal(message)
 ```
 
 `urllib3`のデバッグ情報を出力する:

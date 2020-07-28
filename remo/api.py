@@ -449,7 +449,7 @@ class NatureRemoLocalAPI:
             return resp.json()
         raise NatureRemoError(f"{resp.status_code} {resp.reason}")
 
-    def get(self) -> IRSignal:
+    def get_ir_signal(self) -> IRSignal:
         """Fetch the newest received IR signal.
 
         Returns:
@@ -460,7 +460,7 @@ class NatureRemoLocalAPI:
         json = self.__get_json(resp)
         return IRSignalSchema().load(json)
 
-    def post(self, message: str):
+    def send_ir_signal(self, message: str):
         """Emit IR signals provided by request body.
 
         Args:

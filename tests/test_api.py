@@ -960,7 +960,7 @@ def local_api():
 
 class TestLocalAPI:
     @responses.activate
-    def test_get(self, local_api):
+    def test_get_message(self, local_api):
         freq = 38
         data = [0]
         format = "us"
@@ -972,7 +972,7 @@ class TestLocalAPI:
             status=200,
         )
 
-        ir_signal = local_api.get()
+        ir_signal = local_api.get_ir_signal()
 
         assert type(ir_signal) is IRSignal
         assert ir_signal.freq == freq
@@ -982,13 +982,13 @@ class TestLocalAPI:
         assert responses.calls[0].request.url == url
 
     @responses.activate
-    def test_post(self, local_api):
+    def test_post_message(self, local_api):
         message = '{"format": "us", "freq": 38, "data": [0]}'
         url = f"http://{local_api.addr}/messages"
         responses.add(responses.POST, url, status=200)
 
         try:
-            local_api.post(message)
+            local_api.send_ir_signal(message)
         except NatureRemoError as e:
             pytest.fail(str(e))
 
