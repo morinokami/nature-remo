@@ -13,6 +13,9 @@ flake8 = "*"
 pre-commit = "*"
 black = "==19.10b0"
 responses = "*"
+setuptools = "*"
+wheel = "*"
+twine = "*"
 
 [requires]
 python_version = "3.8"
