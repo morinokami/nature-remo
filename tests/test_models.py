@@ -173,7 +173,7 @@ def test_appliance_model():
     )
 
 
-def test_air_con_params():
+def test_aircon_params():
     temp = "27"
     mode = "cool"
     vol = "auto"
@@ -187,42 +187,42 @@ def test_air_con_params():
         "button": button,
     }
 
-    air_con_params = AirConParamsSchema().load(data)
+    aircon_params = AirConParamsSchema().load(data)
 
-    assert air_con_params.temp == temp
-    assert air_con_params.mode == mode
-    assert air_con_params.vol == vol
-    assert air_con_params.dir == dir
-    assert air_con_params.button == button
+    assert aircon_params.temp == temp
+    assert aircon_params.mode == mode
+    assert aircon_params.vol == vol
+    assert aircon_params.dir == dir
+    assert aircon_params.button == button
 
-    assert air_con_params.as_json_string() == sorted_json(data)
+    assert aircon_params.as_json_string() == sorted_json(data)
     assert (
-        str(air_con_params)
+        str(aircon_params)
         == f"AirConParams(temp='{temp}', mode='{mode}', vol='{vol}', "
         + f"dir='{dir}', button='{button}')"
     )
 
 
-def test_air_con_range_mode():
+def test_aircon_range_mode():
     temp = ["25", "26", "27"]
     vol = ["1", "2", "3", "auto"]
     dir = ["1", "2", "auto", "swing"]
     data = {"temp": temp, "vol": vol, "dir": dir}
 
-    air_con_range_mode = AirConRangeModeSchema().load(data)
+    aircon_range_mode = AirConRangeModeSchema().load(data)
 
-    assert air_con_range_mode.temp == temp
-    assert air_con_range_mode.vol == vol
-    assert air_con_range_mode.dir == dir
+    assert aircon_range_mode.temp == temp
+    assert aircon_range_mode.vol == vol
+    assert aircon_range_mode.dir == dir
 
-    assert air_con_range_mode.as_json_string() == sorted_json(data)
+    assert aircon_range_mode.as_json_string() == sorted_json(data)
     assert (
-        str(air_con_range_mode)
+        str(aircon_range_mode)
         == f"AirConRangeMode(temp={temp}, vol={vol}, dir={dir})"
     )
 
 
-def test_air_con_range():
+def test_aircon_range():
     modes = {
         "mode1": {
             "temp": ["1", "2", "3"],
@@ -238,23 +238,23 @@ def test_air_con_range():
     fixedButtons = ["power-off"]
     data = {"modes": modes, "fixedButtons": fixedButtons}
 
-    air_con_range = AirConRangeSchema().load(data)
+    aircon_range = AirConRangeSchema().load(data)
 
-    assert "mode1" in air_con_range.modes
-    assert air_con_range.modes["mode1"].temp == modes["mode1"]["temp"]
-    assert air_con_range.modes["mode1"].vol == modes["mode1"]["vol"]
-    assert air_con_range.modes["mode1"].dir == modes["mode1"]["dir"]
-    assert "mode2" in air_con_range.modes
-    assert air_con_range.modes["mode2"].temp == modes["mode2"]["temp"]
-    assert air_con_range.modes["mode2"].vol == modes["mode2"]["vol"]
-    assert air_con_range.modes["mode2"].dir == modes["mode2"]["dir"]
-    assert air_con_range.fixedButtons == fixedButtons
+    assert "mode1" in aircon_range.modes
+    assert aircon_range.modes["mode1"].temp == modes["mode1"]["temp"]
+    assert aircon_range.modes["mode1"].vol == modes["mode1"]["vol"]
+    assert aircon_range.modes["mode1"].dir == modes["mode1"]["dir"]
+    assert "mode2" in aircon_range.modes
+    assert aircon_range.modes["mode2"].temp == modes["mode2"]["temp"]
+    assert aircon_range.modes["mode2"].vol == modes["mode2"]["vol"]
+    assert aircon_range.modes["mode2"].dir == modes["mode2"]["dir"]
+    assert aircon_range.fixedButtons == fixedButtons
 
-    assert air_con_range.as_json_string() == sorted_json(data)
-    assert str(air_con_range)
+    assert aircon_range.as_json_string() == sorted_json(data)
+    assert str(aircon_range)
 
 
-def test_air_con():
+def test_aircon():
     modes = {
         "mode1": {
             "temp": ["1", "2", "3"],
@@ -274,21 +274,21 @@ def test_air_con():
     tempUnit = "c"
     data = {"range": range, "tempUnit": tempUnit}
 
-    air_con = AirConSchema().load(data)
+    aircon = AirConSchema().load(data)
 
-    assert "mode1" in air_con.range.modes
-    assert air_con.range.modes["mode1"].temp == modes["mode1"]["temp"]
-    assert air_con.range.modes["mode1"].vol == modes["mode1"]["vol"]
-    assert air_con.range.modes["mode1"].dir == modes["mode1"]["dir"]
-    assert "mode2" in air_con.range.modes
-    assert air_con.range.modes["mode2"].temp == modes["mode2"]["temp"]
-    assert air_con.range.modes["mode2"].vol == modes["mode2"]["vol"]
-    assert air_con.range.modes["mode2"].dir == modes["mode2"]["dir"]
-    assert air_con.range.fixedButtons == range["fixedButtons"]
-    assert air_con.tempUnit == tempUnit
+    assert "mode1" in aircon.range.modes
+    assert aircon.range.modes["mode1"].temp == modes["mode1"]["temp"]
+    assert aircon.range.modes["mode1"].vol == modes["mode1"]["vol"]
+    assert aircon.range.modes["mode1"].dir == modes["mode1"]["dir"]
+    assert "mode2" in aircon.range.modes
+    assert aircon.range.modes["mode2"].temp == modes["mode2"]["temp"]
+    assert aircon.range.modes["mode2"].vol == modes["mode2"]["vol"]
+    assert aircon.range.modes["mode2"].dir == modes["mode2"]["dir"]
+    assert aircon.range.fixedButtons == range["fixedButtons"]
+    assert aircon.tempUnit == tempUnit
 
-    assert air_con.as_json_string() == sorted_json(data)
-    assert str(air_con)
+    assert aircon.as_json_string() == sorted_json(data)
+    assert str(aircon)
 
 
 def test_signal():

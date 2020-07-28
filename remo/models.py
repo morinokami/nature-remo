@@ -210,7 +210,7 @@ class AirConParamsSchema(Schema):
         unknown = EXCLUDE
 
     @post_load
-    def make_air_con_params(self, data, **kwargs):
+    def make_aircon_params(self, data, **kwargs):
         return AirConParams(**data)
 
 
@@ -239,7 +239,7 @@ class AirConRangeModeSchema(Schema):
         unknown = EXCLUDE
 
     @post_load
-    def make_air_con_range_mode(self, data, **kwargs):
+    def make_aircon_range_mode(self, data, **kwargs):
         return AirConRangeMode(**data)
 
 
@@ -265,7 +265,7 @@ class AirConRangeSchema(Schema):
         unknown = EXCLUDE
 
     @post_load
-    def make_air_con_range(self, data, **kwargs):
+    def make_aircon_range(self, data, **kwargs):
         return AirConRange(**data)
 
 
@@ -290,7 +290,7 @@ class AirConSchema(Schema):
         unknown = EXCLUDE
 
     @post_load
-    def make_air_con(self, data, **kwparams):
+    def make_aircon(self, data, **kwparams):
         return AirCon(**data)
 
 
