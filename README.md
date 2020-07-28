@@ -66,6 +66,17 @@ To send a tv infrared signal:
 >>> api.send_tv_infrared_signal(tv.id, 'power')
 ```
 
+To check the current rate limit status:
+
+```py
+>>> api.get_user()
+...
+>>> api.rate_limit
+RateLimit(checked_at=datetime.datetime(2020, 7, 28, 8, 11, 4), limit=30, remaining=29, reset=datetime.datetime(2020, 7, 28, 8, 15))
+>>> api.rate_limit.checked_at, api.rate_limit.limit, api.rate_limit.remaining, api.rate_limit.reset
+(datetime.datetime(2020, 7, 28, 8, 11, 4), 30, 29, datetime.datetime(2020, 7, 28, 8, 15))
+```
+
 To create an instance of `remo.NatureRemoLocalAPI`:
 
 ```py
@@ -114,17 +125,6 @@ header: X-Rate-Limit-Reset: 1595865300
 header: X-Xss-Protection: 1; mode=block
 DEBUG:urllib3.connectionpool:https://api.nature.global:443 "GET /1/users/me HTTP/1.1" 200 72
 User(id='user_id', nickname='your_nickname')
-```
-
-To check the current rate limit status:
-
-```py
->>> api.get_user()
-...
->>> api.rate_limit
-RateLimit(checked_at=datetime.datetime(2020, 7, 28, 8, 11, 4), limit=30, remaining=29, reset=datetime.datetime(2020, 7, 28, 8, 15))
->>> api.rate_limit.checked_at, api.rate_limit.limit, api.rate_limit.remaining, api.rate_limit.reset
-(datetime.datetime(2020, 7, 28, 8, 11, 4), 30, 29, datetime.datetime(2020, 7, 28, 8, 15))
 ```
 
 ## Development Status
@@ -238,6 +238,17 @@ Remo の機器リストを取得し、最初の機器の温度を表示する:
 >>> api.send_tv_infrared_signal(tv.id, "power")
 ```
 
+現在の呼び出し制限 (Rate Limit) を確認する:
+
+```py
+>>> api.get_user()
+...
+>>> api.rate_limit
+RateLimit(checked_at=datetime.datetime(2020, 7, 28, 8, 11, 4), limit=30, remaining=29, reset=datetime.datetime(2020, 7, 28, 8, 15))
+>>> api.rate_limit.checked_at, api.rate_limit.limit, api.rate_limit.remaining, api.rate_limit.reset
+(datetime.datetime(2020, 7, 28, 8, 11, 4), 30, 29, datetime.datetime(2020, 7, 28, 8, 15))
+```
+
 `remo.NatureRemoLocalAPI` のインスタンスを作成する:
 
 ```py
@@ -286,15 +297,4 @@ header: X-Rate-Limit-Reset: 1595865300
 header: X-Xss-Protection: 1; mode=block
 DEBUG:urllib3.connectionpool:https://api.nature.global:443 "GET /1/users/me HTTP/1.1" 200 72
 User(id='user_id', nickname='your_nickname')
-```
-
-現在の呼び出し制限 (Rate Limit) を確認する:
-
-```py
->>> api.get_user()
-...
->>> api.rate_limit
-RateLimit(checked_at=datetime.datetime(2020, 7, 28, 8, 11, 4), limit=30, remaining=29, reset=datetime.datetime(2020, 7, 28, 8, 15))
->>> api.rate_limit.checked_at, api.rate_limit.limit, api.rate_limit.remaining, api.rate_limit.reset
-(datetime.datetime(2020, 7, 28, 8, 11, 4), 30, 29, datetime.datetime(2020, 7, 28, 8, 15))
 ```
