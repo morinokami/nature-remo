@@ -1,4 +1,5 @@
 import urllib
+from datetime import datetime
 
 import pytest
 import responses
@@ -22,6 +23,38 @@ def api():
 
 
 class TestAPI:
+    def test_rate_limit_before_request(self, api):
+        assert api.rate_limit.checked_at is None
+        assert api.rate_limit.limit is None
+        assert api.rate_limit.remaining is None
+        assert api.rate_limit.reset is None
+
+    @responses.activate
+    def test_rate_limit_after_request(self, api):
+        date = "Tue, 28 Jul 2020 07:17:31 GMT"
+        limit = 30
+        remaining = 29
+        reset = 1595920800
+        responses.add(
+            responses.GET,
+            f"{BASE_URL}/1/users/me",
+            headers={
+                "Date": date,
+                "X-Rate-Limit-Limit": str(limit),
+                "X-Rate-Limit-Remaining": str(remaining),
+                "X-Rate-Limit-Reset": str(reset),
+            },
+            json={"id": "user-id", "nickname": "lorem ipsum"},
+            status=200,
+        )
+
+        api.get_user()
+
+        assert api.rate_limit.checked_at == datetime(2020, 7, 28, 7, 17, 31)
+        assert api.rate_limit.limit == limit
+        assert api.rate_limit.remaining == remaining
+        assert api.rate_limit.reset == datetime(2020, 7, 28, 7, 20)
+
     @responses.activate
     def test_unauthorized(self, api):
         responses.add(
