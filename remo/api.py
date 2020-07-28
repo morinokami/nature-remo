@@ -11,6 +11,8 @@ from .__version__ import __version__
 from .errors import build_error_message
 from .errors import NatureRemoError
 from .models import Appliance
+from .models import ApplianceModelAndParams
+from .models import ApplianceModelAndParamsSchema
 from .models import ApplianceSchema
 from .models import Device
 from .models import DeviceSchema
@@ -180,6 +182,18 @@ class NatureRemoAPI:
         resp = self.__request(endpoint, HTTPMethod.POST, {"offset": offset})
         if not resp.ok:
             raise NatureRemoError(build_error_message(resp))
+
+    def detect_appliance(self, message: str) -> List[ApplianceModelAndParams]:
+        """Find the air conditioner best matching the provided infrared signal.
+
+        Args:
+            message: JSON serialized object describing infrared signals.
+              Includes "data", "freq" and "format" keys.
+        """
+        endpoint = "/1/detectappliance"
+        resp = self.__request(endpoint, HTTPMethod.POST, {"message": message})
+        json = self.__get_json(resp)
+        return ApplianceModelAndParamsSchema(many=True).load(json)
 
     def get_appliances(self) -> List[Appliance]:
         """Fetch the list of appliances.

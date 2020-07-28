@@ -136,7 +136,7 @@ Status | HTTP Method | Endpoint | API
 ⚡️ | GET | `/1/users/me` | `get_user`
 ⚡️ | POST | `/1/users/me` | `update_user`
 ⚡️ | GET | `/1/devices` | `get_devices`
-🔥 | POST | `/1/detectappliance` |
+️⚡️ | POST | `/1/detectappliance` | `detect_appliance`
 ⚡️ | GET | `/1/appliances` | `get_appliances`
 ⚡ | POST | `/1/appliances` | `create_appliance`
 ⚡️ | POST | `/1/appliance_orders` | `update_appliance_orders`

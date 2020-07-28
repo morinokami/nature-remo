@@ -5,6 +5,7 @@ import pytest
 import responses
 
 from remo import Appliance
+from remo import ApplianceModelAndParams
 from remo import Device
 from remo import IRSignal
 from remo import NatureRemoAPI
@@ -298,6 +299,36 @@ class TestAPI:
             == "HTTP Status Code: 400, "
             + "Nature Remo Code: 123456, Message: Bad Request"
         )
+
+    @responses.activate
+    def test_detect_appliance(self, api):
+        message = '{"format": "us", "freq": 38, "data": [0]}'
+        model = {
+            "id": "appliance-modelid",
+            "manufacturer": "XXX",
+            "remote_name": "abc123",
+            "name": "XXX AC 001",
+            "image": "ico_appliance_model",
+        }
+        params = {
+            "temp": "27",
+            "mode": "cool",
+            "vol": "auto",
+            "dir": "swing",
+            "button": "power-off",
+        }
+        responses.add(
+            responses.POST,
+            f"{BASE_URL}/1/detectappliance",
+            json=[{"model": model, "params": params}],
+            status=200,
+        )
+
+        model_and_params = api.detect_appliance(message)
+
+        assert type(model_and_params) is list
+        assert len(model_and_params) == 1
+        assert type(model_and_params[0]) is ApplianceModelAndParams
 
     @responses.activate
     def test_get_appliances(self, api):
