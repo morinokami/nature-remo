@@ -87,13 +87,13 @@ class DeviceCore(NatureRemoModel):
     def __repr__(self):
         return (
             f"Device(id='{self.id}', name='{self.name}', "
-            + f"temprature_offset={self.temperature_offset}, "
-            + f"humidity_offset={self.humidity_offset}, "
-            + f"created_at={repr(self.created_at)}, "
-            + f"updated_at={repr(self.updated_at)}, "
-            + f"firmware_version='{self.firmware_version}', "
-            + f"mac_address='{self.mac_address}', "
-            + f"serial_number='{self.serial_number}')"
+            f"temprature_offset={self.temperature_offset}, "
+            f"humidity_offset={self.humidity_offset}, "
+            f"created_at={repr(self.created_at)}, "
+            f"updated_at={repr(self.updated_at)}, "
+            f"firmware_version='{self.firmware_version}', "
+            f"mac_address='{self.mac_address}', "
+            f"serial_number='{self.serial_number}')"
         )
 
 
@@ -148,14 +148,14 @@ class Device(DeviceCore):
     def __repr__(self):
         return (
             f"Device(id='{self.id}', name='{self.name}', "
-            + f"temprature_offset={self.temperature_offset}, "
-            + f"humidity_offset={self.humidity_offset}, "
-            + f"created_at={repr(self.created_at)}, "
-            + f"updated_at={repr(self.updated_at)}, "
-            + f"firmware_version='{self.firmware_version}', "
-            + f"mac_address='{self.mac_address}', "
-            + f"serial_number='{self.serial_number}', "
-            + f"newest_events={self.newest_events})"
+            f"temprature_offset={self.temperature_offset}, "
+            f"humidity_offset={self.humidity_offset}, "
+            f"created_at={repr(self.created_at)}, "
+            f"updated_at={repr(self.updated_at)}, "
+            f"firmware_version='{self.firmware_version}', "
+            f"mac_address='{self.mac_address}', "
+            f"serial_number='{self.serial_number}', "
+            f"newest_events={self.newest_events})"
         )
 
 
@@ -193,9 +193,9 @@ class ApplianceModel(NatureRemoModel):
     def __repr__(self):
         return (
             f"ApplianceModel(id='{self.id}', "
-            + f"manufacturer='{self.manufacturer}', "
-            + f"remote_name='{self.remote_name}', "
-            + f"name='{self.name}', image='{self.image}')"
+            f"manufacturer='{self.manufacturer}', "
+            f"remote_name='{self.remote_name}', "
+            f"name='{self.name}', image='{self.image}')"
         )
 
 
@@ -226,7 +226,7 @@ class AirConParams(NatureRemoModel):
     def __repr__(self):
         return (
             f"AirConParams(temp='{self.temp}', mode='{self.mode}', "
-            + f"vol='{self.vol}', dir='{self.dir}', button='{self.button}')"
+            f"vol='{self.vol}', dir='{self.dir}', button='{self.button}')"
         )
 
 
