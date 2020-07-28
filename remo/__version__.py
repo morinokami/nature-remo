@@ -1,5 +1,5 @@
 __name__ = "nature-remo"
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __author__ = "Shinya Fujino"
 __author_email__ = "shf0811@gmail.com"
 __license__ = "MIT"

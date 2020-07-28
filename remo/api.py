@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+from datetime import datetime
 from enum import auto
 from enum import Enum
 from typing import List
@@ -36,6 +38,14 @@ def enable_debug_mode():
     logging.getLogger().setLevel(logging.DEBUG)
 
 
+@dataclass
+class RateLimit:
+    checked_at: datetime = None
+    limit: int = None
+    remaining: int = None
+    reset: datetime = None
+
+
 class NatureRemoAPI:
     """Client for the Nature Remo API."""
 
@@ -44,6 +54,7 @@ class NatureRemoAPI:
             enable_debug_mode()
         self.access_token = access_token
         self.base_url = BASE_URL
+        self.rate_limit = RateLimit()
 
     def __request(
         self, endpoint: str, method: HTTPMethod, data: dict = None
@@ -55,21 +66,35 @@ class NatureRemoAPI:
         }
         url = f"{self.base_url}{endpoint}"
 
-        if method == HTTPMethod.GET:
-            try:
+        try:
+            if method == HTTPMethod.GET:
                 return requests.get(url, headers=headers)
-            except requests.RequestException as e:
-                raise NatureRemoError(str(e))
-        elif method == HTTPMethod.POST:
-            try:
+            elif method == HTTPMethod.POST:
                 return requests.post(url, headers=headers, data=data)
-            except requests.RequestException as e:
-                raise NatureRemoError(str(e))
+        except requests.RequestException as e:
+            raise NatureRemoError(str(e))
 
     def __get_json(self, resp: requests.models.Response):
+        self.__set_rate_limit(resp)
         if resp.ok:
             return resp.json()
         raise NatureRemoError(build_error_message(resp))
+
+    def __set_rate_limit(self, resp: requests.models.Response):
+        if "Date" in resp.headers:
+            self.rate_limit.checked_at = datetime.strptime(
+                resp.headers["Date"], "%a, %d %b %Y %H:%M:%S GMT"
+            )
+        if "X-Rate-Limit-Limit" in resp.headers:
+            self.rate_limit.limit = int(resp.headers["X-Rate-Limit-Limit"])
+        if "X-Rate-Limit-Remaining" in resp.headers:
+            self.rate_limit.remaining = int(
+                resp.headers["X-Rate-Limit-Remaining"]
+            )
+        if "X-Rate-Limit-Reset" in resp.headers:
+            self.rate_limit.reset = datetime.utcfromtimestamp(
+                int(resp.headers["X-Rate-Limit-Reset"])
+            )
 
     def get_user(self) -> User:
         """Fetch the authenticated user's information.
