@@ -230,6 +230,31 @@ class AirConParams(NatureRemoModel):
         )
 
 
+class ApplianceModelAndParamsSchema(Schema):
+    model = fields.Nested(ApplianceModelSchema)
+    params = fields.Nested(AirConParamsSchema)
+
+    class Meta:
+        unknown = EXCLUDE
+
+    @post_load
+    def make_appliance_model_and_params(self, data, **kwargs):
+        return ApplianceModelAndParams(**data)
+
+
+class ApplianceModelAndParams(NatureRemoModel):
+    def __init__(self, model: ApplianceModel, params: AirConParams):
+        self.model = model
+        self.params = params
+        self.schema = ApplianceModelAndParamsSchema
+
+    def __repr__(self):
+        return (
+            f"ApplianceModelAndParams(model={self.model}, "
+            f"params={self.params})"
+        )
+
+
 class AirConRangeModeSchema(Schema):
     temp = fields.List(fields.Str())
     vol = fields.List(fields.Str())

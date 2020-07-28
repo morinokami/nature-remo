@@ -6,6 +6,7 @@ from remo import AirConParamsSchema
 from remo import AirConRangeModeSchema
 from remo import AirConRangeSchema
 from remo import AirConSchema
+from remo import ApplianceModelAndParamsSchema
 from remo import ApplianceModelSchema
 from remo import ApplianceSchema
 from remo import ButtonSchema
@@ -201,6 +202,50 @@ def test_aircon_params():
         == f"AirConParams(temp='{temp}', mode='{mode}', vol='{vol}', "
         + f"dir='{dir}', button='{button}')"
     )
+
+
+def test_appliance_model_and_params():
+    id = "appliance-id"
+    manufacturer = "XXX"
+    remote_name = "abc123"
+    name = "XXX AC 001"
+    image = "ico_appliance"
+    model = {
+        "id": id,
+        "manufacturer": manufacturer,
+        "remote_name": remote_name,
+        "name": name,
+        "image": image,
+    }
+    temp = "27"
+    mode = "cool"
+    vol = "auto"
+    dir = "swing"
+    button = "power-off"
+    params = {
+        "temp": temp,
+        "mode": mode,
+        "vol": vol,
+        "dir": dir,
+        "button": button,
+    }
+    data = {"model": model, "params": params}
+
+    model_and_params = ApplianceModelAndParamsSchema().load(data)
+
+    assert model_and_params.model.id == id
+    assert model_and_params.model.manufacturer == manufacturer
+    assert model_and_params.model.remote_name == remote_name
+    assert model_and_params.model.name == name
+    assert model_and_params.model.image == image
+    assert model_and_params.params.temp == temp
+    assert model_and_params.params.mode == mode
+    assert model_and_params.params.vol == vol
+    assert model_and_params.params.dir == dir
+    assert model_and_params.params.button == button
+
+    assert model_and_params.as_json_string() == sorted_json(data)
+    assert str(model_and_params)
 
 
 def test_aircon_range_mode():
