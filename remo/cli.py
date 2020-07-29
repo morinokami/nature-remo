@@ -245,7 +245,8 @@ def update_aircon_settings(
 @click.option("--debug", default=False, is_flag=True)
 @click.argument("id")
 @click.argument("button")
-def send_tv_infrared_signal(token: str, debug: str, id: str, button: str):
+@check_token
+def send_tv_infrared_signal(token: str, debug: bool, id: str, button: str):
     """Send tv infrared signal."""
     api = NatureRemoAPI(token, debug)
     api.send_tv_infrared_signal(id, button)
@@ -256,10 +257,101 @@ def send_tv_infrared_signal(token: str, debug: str, id: str, button: str):
 @click.option("--debug", default=False, is_flag=True)
 @click.argument("id")
 @click.argument("button")
-def send_light_infrared_signal(token: str, debug: str, id: str, button: str):
+@check_token
+def send_light_infrared_signal(token: str, debug: bool, id: str, button: str):
     """Send light infrared signal.."""
     api = NatureRemoAPI(token, debug)
     api.send_light_infrared_signal(id, button)
+
+
+@main.group()
+def signal():
+    pass
+
+
+@signal.command("get")
+@click.option("--token", default="")
+@click.option("--debug", default=False, is_flag=True)
+@click.argument("appliance")
+@check_token
+def get_signals(token: str, debug: bool, appliance: str):
+    """Fetch signals registered under this appliance."""
+    api = NatureRemoAPI(token, debug)
+    joined = ", ".join(s.as_json_string() for s in api.get_signals(appliance))
+    output = f"[{joined}]"
+    click.echo(output)
+
+
+@signal.command("create")
+@click.option("--token", default="")
+@click.option("--debug", default=False, is_flag=True)
+@click.argument("appliance")
+@click.argument("name")
+@click.argument("message")
+@click.argument("image")
+@check_token
+def create_signal(
+    token: str,
+    debug: bool,
+    appliance: str,
+    name: str,
+    message: str,
+    image: str,
+):
+    """Create a signal under this appliance."""
+    api = NatureRemoAPI(token, debug)
+    click.echo(
+        api.create_signal(appliance, name, message, image).as_json_string()
+    )
+
+
+@signal.command("update_orders")
+@click.option("--token", default="")
+@click.option("--debug", default=False, is_flag=True)
+@click.argument("appliance")
+@click.argument("signals")
+@check_token
+def update_signal_orders(
+    token: str, debug: bool, appliance: str, signals: str
+):
+    """Reorder signals under this appliance."""
+    api = NatureRemoAPI(token, debug)
+    api.update_signal_orders(appliance, signals)
+
+
+@signal.command("update")
+@click.option("--token", default="")
+@click.option("--debug", default=False, is_flag=True)
+@click.argument("id")
+@click.argument("name")
+@click.argument("image")
+@check_token
+def update_signal(token: str, debug: bool, id: str, name: str, image: str):
+    """Update infrared signal."""
+    api = NatureRemoAPI(token, debug)
+    api.update_signal(id, name, image)
+
+
+@signal.command("delete")
+@click.option("--token", default="")
+@click.option("--debug", default=False, is_flag=True)
+@click.argument("id")
+@check_token
+def delete_signal(token: str, debug: bool, id: str):
+    """Delete infrared signal."""
+    api = NatureRemoAPI(token, debug)
+    api.delete_signal(id)
+
+
+@signal.command("send")
+@click.option("--token", default="")
+@click.option("--debug", default=False, is_flag=True)
+@click.argument("id")
+@check_token
+def send_signal(token: str, debug: bool, id: str):
+    """Send infrared signal."""
+    api = NatureRemoAPI(token, debug)
+    api.send_signal(id)
 
 
 @main.group()

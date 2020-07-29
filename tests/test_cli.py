@@ -8,21 +8,27 @@ from click.testing import CliRunner
 from remo import NatureRemoError
 from remo.api import BASE_URL
 from remo.cli import create_appliance
+from remo.cli import create_signal
 from remo.cli import delete_appliance
 from remo.cli import delete_device
+from remo.cli import delete_signal
 from remo.cli import detect_appliance
 from remo.cli import get_appliances
 from remo.cli import get_devices
 from remo.cli import get_ir_signal
+from remo.cli import get_signals
 from remo.cli import get_user
 from remo.cli import send_ir_signal
 from remo.cli import send_light_infrared_signal
+from remo.cli import send_signal
 from remo.cli import send_tv_infrared_signal
 from remo.cli import update_aircon_settings
 from remo.cli import update_appliance
 from remo.cli import update_appliance_orders
 from remo.cli import update_device
 from remo.cli import update_humidity_offset
+from remo.cli import update_signal
+from remo.cli import update_signal_orders
 from remo.cli import update_temperature_offset
 from remo.cli import update_user
 
@@ -399,6 +405,105 @@ class TestCLI:
         assert len(responses.calls) == 1
         assert responses.calls[0].request.url == url
         assert responses.calls[0].request.body == f"button={button}"
+
+    @responses.activate
+    def test_get_signals(self, runner, set_token):
+        appliance = "appliance-id"
+        url = f"{BASE_URL}/1/appliances/{appliance}/signals"
+        data = [
+            {"id": "id-1", "name": "signal1", "image": "ico_signal"},
+            {"id": "id-2", "name": "signal2", "image": "ico_signal"},
+        ]
+        responses.add(responses.GET, url, json=data, status=200)
+
+        result = runner.invoke(get_signals, [appliance])
+
+        assert result.exit_code == 0
+        assert result.output.strip() == dumps(data)
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
+
+    @responses.activate
+    def test_create_signal(self, runner, set_token):
+        appliance = "appliance_id"
+        name = "signal1"
+        message = '{"freq": 38, "data": [2523, 2717, 786], "format": "us"}'
+        image = "ico_signal"
+        url = f"{BASE_URL}/1/appliances/{appliance}/signals"
+        data = {"id": "signal-id", "name": name, "image": image}
+        responses.add(
+            responses.POST, url, json=data, status=201,
+        )
+
+        result = runner.invoke(
+            create_signal, [appliance, name, message, image]
+        )
+
+        assert result.exit_code == 0
+        assert result.output.strip() == dumps(data)
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
+        assert (
+            responses.calls[0].request.body
+            == f"name={name}&message={urllib.parse.quote_plus(message)}&"
+            + f"image={image}"
+        )
+
+    @responses.activate
+    def test_update_signal_orders(self, runner, set_token):
+        appliance = "appliance-id"
+        signals = "id-xxx,id-yyy,id-zzz"
+        url = f"{BASE_URL}/1/appliances/{appliance}/signal_orders"
+        responses.add(responses.POST, url, status=200)
+
+        result = runner.invoke(update_signal_orders, [appliance, signals])
+
+        assert result.exit_code == 0
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
+        assert (
+            responses.calls[0].request.body
+            == f"signals={urllib.parse.quote_plus(signals)}"
+        )
+
+    @responses.activate
+    def test_update_signal(self, runner, set_token):
+        signal = "signal-id"
+        name = "signal"
+        image = "ico_signal"
+        url = f"{BASE_URL}/1/signals/{signal}"
+        responses.add(responses.POST, url, status=200)
+
+        result = runner.invoke(update_signal, [signal, name, image])
+
+        assert result.exit_code == 0
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
+        assert responses.calls[0].request.body == f"name={name}&image={image}"
+
+    @responses.activate
+    def test_delete_signal(self, runner, set_token):
+        signal = "signal-id"
+        url = f"{BASE_URL}/1/signals/{signal}/delete"
+        responses.add(responses.POST, url, status=200)
+
+        result = runner.invoke(delete_signal, [signal])
+
+        assert result.exit_code == 0
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
+
+    @responses.activate
+    def test_send_signal(self, runner, set_token):
+        signal = "signal-id"
+        url = f"{BASE_URL}/1/signals/{signal}/send"
+        responses.add(responses.POST, url, status=200)
+
+        result = runner.invoke(send_signal, [signal])
+
+        assert result.exit_code == 0
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
 
     @responses.activate
     def test_send_light_infrared_signal(self, runner, set_token):
