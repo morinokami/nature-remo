@@ -1,4 +1,5 @@
 import json
+import urllib.parse
 
 import pytest
 import responses
@@ -9,6 +10,7 @@ from remo.api import BASE_URL
 from remo.cli import get_ir_signal
 from remo.cli import get_user
 from remo.cli import send_ir_signal
+from remo.cli import update_user
 
 
 def dumps(data):
@@ -45,6 +47,26 @@ class TestCLI:
         assert result.output.strip() == dumps(data)
         assert len(responses.calls) == 1
         assert responses.calls[0].request.url == url
+
+    @responses.activate
+    def test_update_user(self, runner, set_token):
+        nickname = "lorem ipsum"
+        url = f"{BASE_URL}/1/users/me"
+        data = {"id": "user-id", "nickname": nickname}
+        responses.add(
+            responses.POST, url, json=data, status=200,
+        )
+
+        result = runner.invoke(update_user, [nickname])
+
+        assert result.exit_code == 0
+        assert result.output.strip() == dumps(data)
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
+        assert (
+            responses.calls[0].request.body
+            == f"nickname={urllib.parse.quote_plus(nickname)}"
+        )
 
     @responses.activate
     def test_get_ir_signal(self, runner):

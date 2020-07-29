@@ -35,12 +35,22 @@ def user():
 
 
 @user.command("get")
-@click.option("--token")
+@click.option("--token", default="")
 @check_token
 def get_user(token: str):
     """Fetch the authenticated user's information."""
     api = NatureRemoAPI(token)
     click.echo(api.get_user().as_json_string())
+
+
+@user.command("update")
+@click.option("--token", default="")
+@click.argument("nickname")
+@check_token
+def update_user(token: str, nickname: str):
+    """Update authenticated user's information."""
+    api = NatureRemoAPI(token)
+    click.echo(api.update_user(nickname).as_json_string())
 
 
 @main.group()
