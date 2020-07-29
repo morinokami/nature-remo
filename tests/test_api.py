@@ -13,9 +13,7 @@ from remo import NatureRemoError
 from remo import NatureRemoLocalAPI
 from remo import Signal
 from remo import User
-
-
-BASE_URL = "https://api.nature.global"
+from remo.api import BASE_URL
 
 
 @pytest.fixture
