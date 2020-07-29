@@ -119,6 +119,150 @@ def update_humidity_offset(token: str, debug: bool, id: str, offset: int):
 
 
 @main.group()
+def appliance():
+    pass
+
+
+@appliance.command("detect")
+@click.option("--token", default="")
+@click.option("--debug", default=False, is_flag=True)
+@click.argument("message")
+@check_token
+def detect_appliance(token: str, debug: bool, message: str):
+    """Find the air conditioner best matching the provided infrared signal."""
+    api = NatureRemoAPI(token, debug)
+    joined = ", ".join(
+        a.as_json_string() for a in api.detect_appliance(message)
+    )
+    output = f"[{joined}]"
+    click.echo(output)
+
+
+@appliance.command("get")
+@click.option("--token", default="")
+@click.option("--debug", default=False, is_flag=True)
+@check_token
+def get_appliances(token: str, debug: bool):
+    """Fetch the list of appliances."""
+    api = NatureRemoAPI(token, debug)
+    output = f"[{', '.join(a.as_json_string() for a in api.get_appliances())}]"
+    click.echo(output)
+
+
+@appliance.command("create")
+@click.option("--token", default="")
+@click.option("--debug", default=False, is_flag=True)
+@click.option("--model", default=None)
+@click.option("--model-type", default=None)
+@click.argument("device")
+@click.argument("nickname")
+@click.argument("image")
+@check_token
+def create_appliance(
+    token: str,
+    debug: bool,
+    model: str,
+    model_type: str,
+    device: str,
+    nickname: str,
+    image: str,
+):
+    """Create a new appliance."""
+    api = NatureRemoAPI(token, debug)
+    click.echo(
+        api.create_appliance(
+            device, nickname, image, model, model_type
+        ).as_json_string()
+    )
+
+
+@appliance.command("update_orders")
+@click.option("--token", default="")
+@click.option("--debug", default=False, is_flag=True)
+@click.argument("appliances")
+@check_token
+def update_appliance_orders(token: str, debug: bool, appliances: str):
+    """Reorder appliances."""
+    api = NatureRemoAPI(token, debug)
+    api.update_appliance_orders(appliances)
+
+
+@appliance.command("delete")
+@click.option("--token", default="")
+@click.option("--debug", default=False, is_flag=True)
+@click.argument("id")
+@check_token
+def delete_appliance(token: str, debug: bool, id: str):
+    """Delete appliance."""
+    api = NatureRemoAPI(token, debug)
+    api.delete_appliance(id)
+
+
+@appliance.command("update")
+@click.option("--token", default="")
+@click.option("--debug", default=False, is_flag=True)
+@click.argument("id")
+@click.argument("nickname")
+@click.argument("image")
+@check_token
+def update_appliance(
+    token: str, debug: bool, id: str, nickname: str, image: str
+):
+    """Update appliance."""
+    api = NatureRemoAPI(token, debug)
+    api.update_appliance(id, nickname, image)
+
+
+@appliance.command("update_aircon_settings")
+@click.option("--token", default="")
+@click.option("--debug", default=False, is_flag=True)
+@click.option("--operation-mode", default=None)
+@click.option("--temperature", default=None)
+@click.option("--air-volume", default=None)
+@click.option("--air-direction", default=None)
+@click.option("--button", default=None)
+@click.argument("id")
+@check_token
+def update_aircon_settings(
+    token: str,
+    debug: bool,
+    operation_mode: str,
+    temperature: str,
+    air_volume: str,
+    air_direction: str,
+    button: str,
+    id: str,
+):
+    """Update air conditioner settings."""
+    api = NatureRemoAPI(token, debug)
+    api.update_aircon_settings(
+        id, operation_mode, temperature, air_volume, air_direction, button
+    )
+
+
+@appliance.command("send_tv_infrared_signal")
+@click.option("--token", default="")
+@click.option("--debug", default=False, is_flag=True)
+@click.argument("id")
+@click.argument("button")
+def send_tv_infrared_signal(token: str, debug: str, id: str, button: str):
+    """Send tv infrared signal."""
+    api = NatureRemoAPI(token, debug)
+    api.send_tv_infrared_signal(id, button)
+
+
+@appliance.command("send_light_infrared_signal")
+@click.option("--token", default="")
+@click.option("--debug", default=False, is_flag=True)
+@click.argument("id")
+@click.argument("button")
+def send_light_infrared_signal(token: str, debug: str, id: str, button: str):
+    """Send light infrared signal.."""
+    api = NatureRemoAPI(token, debug)
+    api.send_light_infrared_signal(id, button)
+
+
+@main.group()
 def local():
     pass
 

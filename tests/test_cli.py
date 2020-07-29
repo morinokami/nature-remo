@@ -7,11 +7,20 @@ from click.testing import CliRunner
 
 from remo import NatureRemoError
 from remo.api import BASE_URL
+from remo.cli import create_appliance
+from remo.cli import delete_appliance
 from remo.cli import delete_device
+from remo.cli import detect_appliance
+from remo.cli import get_appliances
 from remo.cli import get_devices
 from remo.cli import get_ir_signal
 from remo.cli import get_user
 from remo.cli import send_ir_signal
+from remo.cli import send_light_infrared_signal
+from remo.cli import send_tv_infrared_signal
+from remo.cli import update_aircon_settings
+from remo.cli import update_appliance
+from remo.cli import update_appliance_orders
 from remo.cli import update_device
 from remo.cli import update_humidity_offset
 from remo.cli import update_temperature_offset
@@ -160,6 +169,250 @@ class TestCLI:
         assert len(responses.calls) == 1
         assert responses.calls[0].request.url == url
         assert responses.calls[0].request.body == f"offset={offset}"
+
+    @responses.activate
+    def test_detect_appliance(self, runner, set_token):
+        message = '{"format": "us", "freq": 38, "data": [0]}'
+        url = f"{BASE_URL}/1/detectappliance"
+        data = [
+            {
+                "model": {
+                    "id": "appliance-modelid",
+                    "manufacturer": "XXX",
+                    "remote_name": "abc123",
+                    "name": "XXX AC 001",
+                    "image": "ico_appliance_model",
+                },
+                "params": {
+                    "temp": "27",
+                    "mode": "cool",
+                    "vol": "auto",
+                    "dir": "swing",
+                    "button": "power-off",
+                },
+            }
+        ]
+        responses.add(responses.POST, url, json=data, status=200)
+
+        result = runner.invoke(detect_appliance, [message])
+
+        assert result.exit_code == 0
+        assert result.output.strip() == dumps(data)
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
+        assert (
+            responses.calls[0].request.body
+            == f"message={urllib.parse.quote_plus(message)}"
+        )
+
+    @responses.activate
+    def test_get_appliances(self, runner, set_token):
+        url = f"{BASE_URL}/1/appliances"
+        data = [
+            {
+                "id": "appliance-id",
+                "device": {
+                    "id": "device_id",
+                    "name": "device_name",
+                    "temperature_offset": 0,
+                    "humidity_offset": 0,
+                    "created_at": "2020-01-01T01:23:45Z",
+                    "updated_at": "2020-01-01T01:23:45Z",
+                    "firmware_version": "Remo/1.0.23",
+                    "mac_address": "ab:cd:ef:01:23:45",
+                    "serial_number": "1W111111111111",
+                },
+                "model": {
+                    "id": "appliance-modelid",
+                    "manufacturer": "XXX",
+                    "remote_name": "abc123",
+                    "name": "XXX AC 001",
+                    "image": "ico_appliance_model",
+                },
+                "nickname": "appliance-nickname",
+                "image": "ico_appliance",
+                "type": "AC",
+                "settings": {
+                    "temp": "27",
+                    "mode": "cool",
+                    "vol": "auto",
+                    "dir": "swing",
+                    "button": "power-off",
+                },
+                "aircon": {
+                    "range": {
+                        "modes": {
+                            "mode1": {
+                                "temp": ["1", "2", "3"],
+                                "vol": ["1", "auto"],
+                                "dir": ["1", "2"],
+                            },
+                            "mode2": {
+                                "temp": ["1", "2"],
+                                "vol": ["1", "2", "auto"],
+                                "dir": ["auto", "swing"],
+                            },
+                        },
+                        "fixedButtons": ["power-off"],
+                    },
+                    "tempUnit": "c",
+                },
+                "signals": [
+                    {
+                        "id": "signal-id",
+                        "name": "signal-name",
+                        "image": "ico_signal",
+                    }
+                ],
+                "tv": {
+                    "state": {"input": "t"},
+                    "buttons": [
+                        {
+                            "name": "button-name",
+                            "image": "ico_button",
+                            "label": "button_label",
+                        }
+                    ],
+                },
+            }
+        ]
+        responses.add(responses.GET, url, json=data, status=200)
+
+        result = runner.invoke(get_appliances)
+
+        assert result.exit_code == 0
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
+
+    @responses.activate
+    def test_create_appliance(self, runner, set_token):
+        device = "device-id"
+        nickname = "my-device"
+        image = "ico_appliance"
+        url = f"{BASE_URL}/1/appliances"
+        data = {
+            "id": "appliance-id",
+            "device": {
+                "id": "device-id-123-abc",
+                "name": "Remo",
+                "temperature_offset": 0,
+                "humidity_offset": 0,
+                "created_at": "2020-01-01T01:23:45Z",
+                "updated_at": "2020-01-01T01:23:45Z",
+                "firmware_version": "Remo/1.0.23",
+                "mac_address": "ab:cd:ef:01:23:45",
+                "serial_number": "1W111111111111",
+            },
+            "nickname": "my-appliance",
+            "image": "ico_appliance",
+            "model": None,
+            "type": "IR",
+            "settings": None,
+            "aircon": None,
+            "signals": [],
+        }
+        responses.add(responses.POST, url, json=data, status=201)
+
+        result = runner.invoke(create_appliance, [device, nickname, image])
+
+        assert result.exit_code == 0
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
+        assert (
+            responses.calls[0].request.body
+            == f"device={device}&nickname={nickname}&image={image}"
+        )
+
+    @responses.activate
+    def test_update_appliance_orders(self, runner, set_token):
+        appliances = "id-xxx,id-yyy,id-zzz"
+        url = f"{BASE_URL}/1/appliance_orders"
+        responses.add(responses.POST, url, status=200)
+
+        result = runner.invoke(update_appliance_orders, [appliances])
+
+        assert result.exit_code == 0
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
+        assert (
+            responses.calls[0].request.body
+            == f"appliances={urllib.parse.quote_plus(appliances)}"
+        )
+
+    @responses.activate
+    def test_delete_appliance(self, runner, set_token):
+        appliance = "appliance-id"
+        url = f"{BASE_URL}/1/appliances/{appliance}/delete"
+        responses.add(responses.POST, url, status=200)
+
+        result = runner.invoke(delete_appliance, [appliance])
+
+        assert result.exit_code == 0
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
+
+    @responses.activate
+    def test_update_appliance(self, runner, set_token):
+        appliance = "appliance-id"
+        nickname = "appliance-nickname"
+        image = "ico_appliance"
+        url = f"{BASE_URL}/1/appliances/{appliance}"
+        responses.add(responses.POST, url, status=200)
+
+        result = runner.invoke(update_appliance, [appliance, nickname, image])
+
+        assert result.exit_code == 0
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
+
+    @responses.activate
+    def test_update_aircon_settings(self, runner, set_token):
+        appliance = "appliance-id"
+        air_direction = "auto"
+        url = f"{BASE_URL}/1/appliances/{appliance}/aircon_settings"
+        responses.add(
+            responses.POST, url, status=200,
+        )
+
+        result = runner.invoke(
+            update_aircon_settings,
+            [appliance, "--air-direction", air_direction],
+        )
+
+        assert result.exit_code == 0
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
+        assert (
+            responses.calls[0].request.body == f"air_direction={air_direction}"
+        )
+
+    @responses.activate
+    def test_send_tv_infrared_signal(self, runner, set_token):
+        appliance = "appliance-id"
+        button = "button"
+        url = f"{BASE_URL}/1/appliances/{appliance}/tv"
+        responses.add(responses.POST, url, status=200)
+
+        result = runner.invoke(send_tv_infrared_signal, [appliance, button])
+
+        assert result.exit_code == 0
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
+        assert responses.calls[0].request.body == f"button={button}"
+
+    @responses.activate
+    def test_send_light_infrared_signal(self, runner, set_token):
+        appliance = "appliance-id"
+        button = "button"
+        url = f"{BASE_URL}/1/appliances/{appliance}/light"
+        responses.add(responses.POST, url, status=200)
+
+        result = runner.invoke(send_light_infrared_signal, [appliance, button])
+
+        assert result.exit_code == 0
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
+        assert responses.calls[0].request.body == f"button={button}"
 
     @responses.activate
     def test_get_ir_signal(self, runner):

@@ -568,7 +568,7 @@ class TestAPI:
     def test_update_appliance(self, api):
         appliance = "appliance-id"
         nickname = "appliance-nickname"
-        image = "ico_nickname"
+        image = "ico_appliance"
         url = f"{BASE_URL}/1/appliances/{appliance}"
         responses.add(responses.POST, url, status=200)
 
@@ -588,7 +588,7 @@ class TestAPI:
     def test_update_appliance_raises(self, api):
         appliance = "appliance-id"
         nickname = "appliance-nickname"
-        image = "ico_nickname"
+        image = "ico_appliance"
         url = f"{BASE_URL}/1/appliances/{appliance}"
         responses.add(
             responses.POST,
