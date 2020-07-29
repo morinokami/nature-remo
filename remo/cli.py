@@ -36,20 +36,22 @@ def user():
 
 @user.command("get")
 @click.option("--token", default="")
+@click.option("--debug", default=False, is_flag=True)
 @check_token
-def get_user(token: str):
+def get_user(token: str, debug: bool):
     """Fetch the authenticated user's information."""
-    api = NatureRemoAPI(token)
+    api = NatureRemoAPI(token, debug)
     click.echo(api.get_user().as_json_string())
 
 
 @user.command("update")
 @click.option("--token", default="")
+@click.option("--debug", default=False, is_flag=True)
 @click.argument("nickname")
 @check_token
-def update_user(token: str, nickname: str):
+def update_user(token: str, debug: bool, nickname: str):
     """Update authenticated user's information."""
-    api = NatureRemoAPI(token)
+    api = NatureRemoAPI(token, debug)
     click.echo(api.update_user(nickname).as_json_string())
 
 
@@ -59,19 +61,21 @@ def local():
 
 
 @local.command("get")
+@click.option("--debug", default=False, is_flag=True)
 @click.argument("ip_addr")
-def get_ir_signal(ip_addr: str):
+def get_ir_signal(debug: bool, ip_addr: str):
     """Fetch the newest received IR signal."""
-    local_api = NatureRemoLocalAPI(ip_addr)
+    local_api = NatureRemoLocalAPI(ip_addr, debug)
     click.echo(local_api.get_ir_signal().as_json_string())
 
 
 @local.command("send")
+@click.option("--debug", default=False, is_flag=True)
 @click.argument("ip_addr")
 @click.argument("message")
-def send_ir_signal(ip_addr: str, message: str):
+def send_ir_signal(debug: bool, ip_addr: str, message: str):
     """Emit IR signals provided by request body."""
-    local_api = NatureRemoLocalAPI(ip_addr)
+    local_api = NatureRemoLocalAPI(ip_addr, debug)
     local_api.send_ir_signal(message)
 
 
