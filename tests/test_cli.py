@@ -7,9 +7,14 @@ from click.testing import CliRunner
 
 from remo import NatureRemoError
 from remo.api import BASE_URL
+from remo.cli import delete_device
+from remo.cli import get_devices
 from remo.cli import get_ir_signal
 from remo.cli import get_user
 from remo.cli import send_ir_signal
+from remo.cli import update_device
+from remo.cli import update_humidity_offset
+from remo.cli import update_temperature_offset
 from remo.cli import update_user
 
 
@@ -28,7 +33,8 @@ def set_token(monkeypatch):
 
 
 class TestCLI:
-    def test_no_access_token_raises(self, runner):
+    def test_no_access_token_raises(self, runner, monkeypatch):
+        monkeypatch.delenv("REMO_ACCESS_TOKEN", raising=False)
         result = runner.invoke(get_user)
 
         assert result.exit_code != 0
@@ -67,6 +73,93 @@ class TestCLI:
             responses.calls[0].request.body
             == f"nickname={urllib.parse.quote_plus(nickname)}"
         )
+
+    @responses.activate
+    def test_get_devices(self, runner, set_token):
+        url = f"{BASE_URL}/1/devices"
+        data = [
+            {
+                "id": "device-id",
+                "name": "Remo",
+                "temperature_offset": 0,
+                "humidity_offset": 0,
+                "created_at": "2020-01-01T01:23:45Z",
+                "updated_at": "2020-01-01T01:23:45Z",
+                "firmware_version": "Remo/1.0.23",
+                "mac_address": "ab:cd:ef:01:23:45",
+                "serial_number": "1W111111111111",
+                "newest_events": {
+                    "hu": {"val": 76, "created_at": "2020-01-01T01:23:45Z"},
+                    "il": {"val": 0, "created_at": "2020-01-01T01:23:45Z"},
+                    "mo": {"val": 1, "created_at": "2020-01-01T01:23:45Z"},
+                    "te": {
+                        "val": 25.149109,
+                        "created_at": "2020-01-01T01:23:45Z",
+                    },
+                },
+            }
+        ]
+        responses.add(responses.GET, url, json=data, status=200)
+
+        result = runner.invoke(get_devices)
+
+        assert result.exit_code == 0
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
+
+    @responses.activate
+    def test_update_device(self, runner, set_token):
+        device = "device-id"
+        name = "remo"
+        url = f"{BASE_URL}/1/devices/{device}"
+        responses.add(responses.POST, url, status=200)
+
+        result = runner.invoke(update_device, [device, name])
+
+        assert result.exit_code == 0
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
+        assert responses.calls[0].request.body == f"name={name}"
+
+    @responses.activate
+    def test_delete_device(self, runner, set_token):
+        device = "device-id"
+        url = f"{BASE_URL}/1/devices/{device}/delete"
+        responses.add(responses.POST, url, status=200)
+
+        result = runner.invoke(delete_device, [device])
+
+        assert result.exit_code == 0
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
+
+    @responses.activate
+    def test_update_temperature_offset(self, runner, set_token):
+        device = "device-id"
+        offset = "1"
+        url = f"{BASE_URL}/1/devices/{device}/temperature_offset"
+        responses.add(responses.POST, url, status=200)
+
+        result = runner.invoke(update_temperature_offset, [device, offset])
+
+        assert result.exit_code == 0
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
+        assert responses.calls[0].request.body == f"offset={offset}"
+
+    @responses.activate
+    def test_update_humidity_offset(self, runner, set_token):
+        device = "device-id"
+        offset = "1"
+        url = f"{BASE_URL}/1/devices/{device}/humidity_offset"
+        responses.add(responses.POST, url, status=200)
+
+        result = runner.invoke(update_humidity_offset, [device, offset])
+
+        assert result.exit_code == 0
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
+        assert responses.calls[0].request.body == f"offset={offset}"
 
     @responses.activate
     def test_get_ir_signal(self, runner):

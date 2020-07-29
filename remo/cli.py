@@ -56,6 +56,69 @@ def update_user(token: str, debug: bool, nickname: str):
 
 
 @main.group()
+def device():
+    pass
+
+
+@device.command("get")
+@click.option("--token", default="")
+@click.option("--debug", default=False, is_flag=True)
+@check_token
+def get_devices(token: str, debug: bool):
+    """Fetch the list of Remo devices the user has access to."""
+    api = NatureRemoAPI(token, debug)
+    output = f"[{', '.join(d.as_json_string() for d in api.get_devices())}]"
+    click.echo(output)
+
+
+@device.command("update")
+@click.option("--token", default="")
+@click.option("--debug", default=False, is_flag=True)
+@click.argument("id")
+@click.argument("name")
+@check_token
+def update_device(token: str, debug: bool, id: str, name: str):
+    """Update Remo."""
+    api = NatureRemoAPI(token, debug)
+    api.update_device(id, name)
+
+
+@device.command("delete")
+@click.option("--token", default="")
+@click.option("--debug", default=False, is_flag=True)
+@click.argument("id")
+@check_token
+def delete_device(token: str, debug: bool, id: str):
+    """Delete Remo."""
+    api = NatureRemoAPI(token, debug)
+    api.delete_device(id)
+
+
+@device.command("update_temperature_offset")
+@click.option("--token", default="")
+@click.option("--debug", default=False, is_flag=True)
+@click.argument("id")
+@click.argument("offset", type=int)
+@check_token
+def update_temperature_offset(token: str, debug: bool, id: str, offset: int):
+    """Update temperature offset."""
+    api = NatureRemoAPI(token, debug)
+    api.update_temperature_offset(id, offset)
+
+
+@device.command("update_humidity_offset")
+@click.option("--token", default="")
+@click.option("--debug", default=False, is_flag=True)
+@click.argument("id")
+@click.argument("offset", type=int)
+@check_token
+def update_humidity_offset(token: str, debug: bool, id: str, offset: int):
+    """Update humidity offset."""
+    api = NatureRemoAPI(token, debug)
+    api.update_humidity_offset(id, offset)
+
+
+@main.group()
 def local():
     pass
 
