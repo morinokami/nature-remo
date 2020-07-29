@@ -56,5 +56,14 @@ def get_ir_signal(ip_addr: str):
     click.echo(local_api.get_ir_signal().as_json_string())
 
 
+@local.command("send")
+@click.argument("ip_addr")
+@click.argument("message")
+def send_ir_signal(ip_addr: str, message: str):
+    """Emit IR signals provided by request body."""
+    local_api = NatureRemoLocalAPI(ip_addr)
+    local_api.send_ir_signal(message)
+
+
 if __name__ == "__main__":
     main()

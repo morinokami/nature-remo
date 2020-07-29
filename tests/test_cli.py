@@ -8,6 +8,7 @@ from remo import NatureRemoError
 from remo.api import BASE_URL
 from remo.cli import get_ir_signal
 from remo.cli import get_user
+from remo.cli import send_ir_signal
 
 
 def dumps(data):
@@ -40,7 +41,10 @@ class TestCLI:
 
         result = runner.invoke(get_user)
 
+        assert result.exit_code == 0
         assert result.output.strip() == dumps(data)
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
 
     @responses.activate
     def test_get_ir_signal(self, runner):
@@ -53,4 +57,21 @@ class TestCLI:
 
         result = runner.invoke(get_ir_signal, [ip_addr])
 
+        assert result.exit_code == 0
         assert result.output.strip() == dumps(data)
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
+
+    @responses.activate
+    def test_send_ir_signal(self, runner):
+        message = '{"format": "us", "freq": 38, "data": [0]}'
+        ip_addr = "192.168.1.1"
+        url = f"http://{ip_addr}/messages"
+        responses.add(responses.POST, url, status=200)
+
+        result = runner.invoke(send_ir_signal, [ip_addr, message])
+
+        assert result.exit_code == 0
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.url == url
+        assert responses.calls[0].request.body == message
