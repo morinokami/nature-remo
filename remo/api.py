@@ -464,7 +464,7 @@ class NatureRemoLocalAPI:
         """Emit IR signals provided by request body.
 
         Args:
-            messages: JSON serialized object describing infrared signals.
+            message: JSON serialized object describing infrared signals.
               Includes "data", "freq" and "format" keys.
         """
         endpoint = "/messages"

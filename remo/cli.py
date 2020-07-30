@@ -50,7 +50,10 @@ def get_user(token: str, debug: bool):
 @click.argument("nickname")
 @check_token
 def update_user(token: str, debug: bool, nickname: str):
-    """Update authenticated user's information."""
+    """Update authenticated user's information.
+
+    NICKNAME: User's nickname.
+    """
     api = NatureRemoAPI(token, debug)
     click.echo(api.update_user(nickname).as_json_string())
 
@@ -78,7 +81,11 @@ def get_devices(token: str, debug: bool):
 @click.argument("name")
 @check_token
 def update_device(token: str, debug: bool, id: str, name: str):
-    """Update Remo."""
+    """Update Remo.
+
+    ID: Device ID.
+    NAME: Device name.
+    """
     api = NatureRemoAPI(token, debug)
     api.update_device(id, name)
 
@@ -89,7 +96,10 @@ def update_device(token: str, debug: bool, id: str, name: str):
 @click.argument("id")
 @check_token
 def delete_device(token: str, debug: bool, id: str):
-    """Delete Remo."""
+    """Delete Remo.
+
+    ID: Device ID.
+    """
     api = NatureRemoAPI(token, debug)
     api.delete_device(id)
 
@@ -101,7 +111,11 @@ def delete_device(token: str, debug: bool, id: str):
 @click.argument("offset", type=int)
 @check_token
 def update_temperature_offset(token: str, debug: bool, id: str, offset: int):
-    """Update temperature offset."""
+    """Update temperature offset.
+
+    ID: Device ID.
+    OFFSET: Temperature offset value added to the measured temperature.
+    """
     api = NatureRemoAPI(token, debug)
     api.update_temperature_offset(id, offset)
 
@@ -113,7 +127,11 @@ def update_temperature_offset(token: str, debug: bool, id: str, offset: int):
 @click.argument("offset", type=int)
 @check_token
 def update_humidity_offset(token: str, debug: bool, id: str, offset: int):
-    """Update humidity offset."""
+    """Update humidity offset.
+
+    ID: Device ID.
+    OFFSET: Humidity offset value added to the measured humidity.
+    """
     api = NatureRemoAPI(token, debug)
     api.update_humidity_offset(id, offset)
 
@@ -129,7 +147,11 @@ def appliance():
 @click.argument("message")
 @check_token
 def detect_appliance(token: str, debug: bool, message: str):
-    """Find the air conditioner best matching the provided infrared signal."""
+    """Find the air conditioner best matching the provided infrared signal.
+
+    MESSAGE: JSON serialized object describing infrared signals. Includes
+    "data", "freq" and "format" keys.
+    """
     api = NatureRemoAPI(token, debug)
     joined = ", ".join(
         a.as_json_string() for a in api.detect_appliance(message)
@@ -152,8 +174,15 @@ def get_appliances(token: str, debug: bool):
 @appliance.command("create")
 @click.option("--token", default="")
 @click.option("--debug", default=False, is_flag=True)
-@click.option("--model", default=None)
-@click.option("--model-type", default=None)
+@click.option(
+    "--model",
+    default=None,
+    help=(
+        "ApplianceModel ID if the appliance we're trying to create is "
+        "included in IRDB."
+    ),
+)
+@click.option("--model-type", default=None, help="Type of model.")
 @click.argument("device")
 @click.argument("nickname")
 @click.argument("image")
@@ -167,7 +196,12 @@ def create_appliance(
     nickname: str,
     image: str,
 ):
-    """Create a new appliance."""
+    """Create a new appliance.
+
+    DEVICE: Device ID.
+    NICKNAME: Appliance name.
+    IMAGE: Basename of the image file included in the app.
+    """
     api = NatureRemoAPI(token, debug)
     click.echo(
         api.create_appliance(
@@ -182,7 +216,10 @@ def create_appliance(
 @click.argument("appliances")
 @check_token
 def update_appliance_orders(token: str, debug: bool, appliances: str):
-    """Reorder appliances."""
+    """Reorder appliances.
+
+    APPLIANCES: List of all appliances' IDs comma separated.
+    """
     api = NatureRemoAPI(token, debug)
     api.update_appliance_orders(appliances)
 
@@ -193,7 +230,10 @@ def update_appliance_orders(token: str, debug: bool, appliances: str):
 @click.argument("id")
 @check_token
 def delete_appliance(token: str, debug: bool, id: str):
-    """Delete appliance."""
+    """Delete appliance.
+
+    ID: Appliance ID.
+    """
     api = NatureRemoAPI(token, debug)
     api.delete_appliance(id)
 
@@ -208,7 +248,12 @@ def delete_appliance(token: str, debug: bool, id: str):
 def update_appliance(
     token: str, debug: bool, id: str, nickname: str, image: str
 ):
-    """Update appliance."""
+    """Update appliance.
+
+    ID: Appliance ID.
+    NICKNAME: Appliance name.
+    IMAGE: Basename of the image file included in the app.
+    """
     api = NatureRemoAPI(token, debug)
     api.update_appliance(id, nickname, image)
 
@@ -216,11 +261,11 @@ def update_appliance(
 @appliance.command("update_aircon_settings")
 @click.option("--token", default="")
 @click.option("--debug", default=False, is_flag=True)
-@click.option("--operation-mode", default=None)
-@click.option("--temperature", default=None)
-@click.option("--air-volume", default=None)
-@click.option("--air-direction", default=None)
-@click.option("--button", default=None)
+@click.option("--operation-mode", default=None, help="AC operation mode.")
+@click.option("--temperature", default=None, help="Temperature.")
+@click.option("--air-volume", default=None, help="AC air volume.")
+@click.option("--air-direction", default=None, help="AC air direction.")
+@click.option("--button", default=None, help="Button.")
 @click.argument("id")
 @check_token
 def update_aircon_settings(
@@ -233,7 +278,10 @@ def update_aircon_settings(
     button: str,
     id: str,
 ):
-    """Update air conditioner settings."""
+    """Update air conditioner settings.
+
+    ID: Appliance ID.
+    """
     api = NatureRemoAPI(token, debug)
     api.update_aircon_settings(
         id, operation_mode, temperature, air_volume, air_direction, button
@@ -247,7 +295,11 @@ def update_aircon_settings(
 @click.argument("button")
 @check_token
 def send_tv_infrared_signal(token: str, debug: bool, id: str, button: str):
-    """Send tv infrared signal."""
+    """Send tv infrared signal.
+
+    ID: Appliance ID.
+    BUTTON: Button name.
+    """
     api = NatureRemoAPI(token, debug)
     api.send_tv_infrared_signal(id, button)
 
@@ -259,7 +311,11 @@ def send_tv_infrared_signal(token: str, debug: bool, id: str, button: str):
 @click.argument("button")
 @check_token
 def send_light_infrared_signal(token: str, debug: bool, id: str, button: str):
-    """Send light infrared signal.."""
+    """Send light infrared signal.
+
+    ID: Appliance ID.
+    BUTTON: Button name.
+    """
     api = NatureRemoAPI(token, debug)
     api.send_light_infrared_signal(id, button)
 
@@ -275,7 +331,10 @@ def signal():
 @click.argument("appliance")
 @check_token
 def get_signals(token: str, debug: bool, appliance: str):
-    """Fetch signals registered under this appliance."""
+    """Fetch signals registered under this appliance.
+
+    APPLIANCE: Appliance ID.
+    """
     api = NatureRemoAPI(token, debug)
     joined = ", ".join(s.as_json_string() for s in api.get_signals(appliance))
     output = f"[{joined}]"
@@ -298,7 +357,14 @@ def create_signal(
     message: str,
     image: str,
 ):
-    """Create a signal under this appliance."""
+    """Create a signal under this appliance.
+
+    APPLIANCE: Appliance ID.
+    NAME: Signal name.
+    MESSAGE: JSON serialized object describing infrared signals. Includes
+    "data", "freq" and "format" keys.
+    IMAGE: Basename of the image file included in the app.
+    """
     api = NatureRemoAPI(token, debug)
     click.echo(
         api.create_signal(appliance, name, message, image).as_json_string()
@@ -314,7 +380,11 @@ def create_signal(
 def update_signal_orders(
     token: str, debug: bool, appliance: str, signals: str
 ):
-    """Reorder signals under this appliance."""
+    """Reorder signals under this appliance.
+
+    APPLIANCE: Appliance ID.
+    SIGNALS: List of all signals' IDs comma separated.
+    """
     api = NatureRemoAPI(token, debug)
     api.update_signal_orders(appliance, signals)
 
@@ -327,7 +397,12 @@ def update_signal_orders(
 @click.argument("image")
 @check_token
 def update_signal(token: str, debug: bool, id: str, name: str, image: str):
-    """Update infrared signal."""
+    """Update infrared signal.
+
+    ID: Signal ID.
+    NAME: Signal name.
+    IMAGE: Basename of the image file included in the app.
+    """
     api = NatureRemoAPI(token, debug)
     api.update_signal(id, name, image)
 
@@ -338,7 +413,10 @@ def update_signal(token: str, debug: bool, id: str, name: str, image: str):
 @click.argument("id")
 @check_token
 def delete_signal(token: str, debug: bool, id: str):
-    """Delete infrared signal."""
+    """Delete infrared signal.
+
+    ID: Signal ID.
+    """
     api = NatureRemoAPI(token, debug)
     api.delete_signal(id)
 
@@ -349,7 +427,10 @@ def delete_signal(token: str, debug: bool, id: str):
 @click.argument("id")
 @check_token
 def send_signal(token: str, debug: bool, id: str):
-    """Send infrared signal."""
+    """Send infrared signal.
+
+    ID: Signal ID.
+    """
     api = NatureRemoAPI(token, debug)
     api.send_signal(id)
 
@@ -363,7 +444,10 @@ def local():
 @click.option("--debug", default=False, is_flag=True)
 @click.argument("ip_addr")
 def get_ir_signal(debug: bool, ip_addr: str):
-    """Fetch the newest received IR signal."""
+    """Fetch the newest received IR signal.
+
+    IP_ADDR: IP address of Remo.
+    """
     local_api = NatureRemoLocalAPI(ip_addr, debug)
     click.echo(local_api.get_ir_signal().as_json_string())
 
@@ -373,7 +457,12 @@ def get_ir_signal(debug: bool, ip_addr: str):
 @click.argument("ip_addr")
 @click.argument("message")
 def send_ir_signal(debug: bool, ip_addr: str, message: str):
-    """Emit IR signals provided by request body."""
+    """Emit IR signals provided by request body.
+
+    IP_ADDR: IP address of Remo.
+    MESSAGE: JSON serialized object describing infrared signals. Includes
+    "data", "freq" and "format" keys.
+    """
     local_api = NatureRemoLocalAPI(ip_addr, debug)
     local_api.send_ir_signal(message)
 
