@@ -1,0 +1,12 @@
+{
+  "state": {
+    "input": "t"
+  },
+  "buttons": [
+    {
+      "name": "button-name",
+      "image": "ico_button",
+      "label": "button_label"
+    }
+  ]
+}

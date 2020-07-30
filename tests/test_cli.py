@@ -5,6 +5,7 @@ import pytest
 import responses
 from click.testing import CliRunner
 
+from .utils import load_json
 from remo import NatureRemoError
 from remo.api import BASE_URL
 from remo.cli import create_appliance
@@ -58,8 +59,8 @@ class TestCLI:
 
     @responses.activate
     def test_get_user(self, runner, set_token):
+        data = load_json("testdata/user.json")
         url = f"{BASE_URL}/1/users/me"
-        data = {"id": "user-id", "nickname": "lorem ipsum"}
         responses.add(responses.GET, url, json=data, status=200)
 
         result = runner.invoke(get_user)
@@ -71,14 +72,13 @@ class TestCLI:
 
     @responses.activate
     def test_update_user(self, runner, set_token):
-        nickname = "lorem ipsum"
+        data = load_json("testdata/user.json")
         url = f"{BASE_URL}/1/users/me"
-        data = {"id": "user-id", "nickname": nickname}
         responses.add(
             responses.POST, url, json=data, status=200,
         )
 
-        result = runner.invoke(update_user, [nickname])
+        result = runner.invoke(update_user, [data["nickname"]])
 
         assert result.exit_code == 0
         assert result.output.strip() == dumps(data)
@@ -86,34 +86,13 @@ class TestCLI:
         assert responses.calls[0].request.url == url
         assert (
             responses.calls[0].request.body
-            == f"nickname={urllib.parse.quote_plus(nickname)}"
+            == f"nickname={urllib.parse.quote_plus(data['nickname'])}"
         )
 
     @responses.activate
     def test_get_devices(self, runner, set_token):
+        data = [load_json("testdata/device.json")]
         url = f"{BASE_URL}/1/devices"
-        data = [
-            {
-                "id": "device-id",
-                "name": "Remo",
-                "temperature_offset": 0,
-                "humidity_offset": 0,
-                "created_at": "2020-01-01T01:23:45Z",
-                "updated_at": "2020-01-01T01:23:45Z",
-                "firmware_version": "Remo/1.0.23",
-                "mac_address": "ab:cd:ef:01:23:45",
-                "serial_number": "1W111111111111",
-                "newest_events": {
-                    "hu": {"val": 76, "created_at": "2020-01-01T01:23:45Z"},
-                    "il": {"val": 0, "created_at": "2020-01-01T01:23:45Z"},
-                    "mo": {"val": 1, "created_at": "2020-01-01T01:23:45Z"},
-                    "te": {
-                        "val": 25.149109,
-                        "created_at": "2020-01-01T01:23:45Z",
-                    },
-                },
-            }
-        ]
         responses.add(responses.GET, url, json=data, status=200)
 
         result = runner.invoke(get_devices)
@@ -125,7 +104,7 @@ class TestCLI:
     @responses.activate
     def test_update_device(self, runner, set_token):
         device = "device-id"
-        name = "remo"
+        name = "Remo"
         url = f"{BASE_URL}/1/devices/{device}"
         responses.add(responses.POST, url, status=200)
 
@@ -179,25 +158,8 @@ class TestCLI:
     @responses.activate
     def test_detect_appliance(self, runner, set_token):
         message = '{"format": "us", "freq": 38, "data": [0]}'
+        data = [load_json("testdata/appliance_model_and_params.json")]
         url = f"{BASE_URL}/1/detectappliance"
-        data = [
-            {
-                "model": {
-                    "id": "appliance-modelid",
-                    "manufacturer": "XXX",
-                    "remote_name": "abc123",
-                    "name": "XXX AC 001",
-                    "image": "ico_appliance_model",
-                },
-                "params": {
-                    "temp": "27",
-                    "mode": "cool",
-                    "vol": "auto",
-                    "dir": "swing",
-                    "button": "power-off",
-                },
-            }
-        ]
         responses.add(responses.POST, url, json=data, status=200)
 
         result = runner.invoke(detect_appliance, [message])
@@ -213,75 +175,8 @@ class TestCLI:
 
     @responses.activate
     def test_get_appliances(self, runner, set_token):
+        data = [load_json("testdata/appliance.json")]
         url = f"{BASE_URL}/1/appliances"
-        data = [
-            {
-                "id": "appliance-id",
-                "device": {
-                    "id": "device_id",
-                    "name": "device_name",
-                    "temperature_offset": 0,
-                    "humidity_offset": 0,
-                    "created_at": "2020-01-01T01:23:45Z",
-                    "updated_at": "2020-01-01T01:23:45Z",
-                    "firmware_version": "Remo/1.0.23",
-                    "mac_address": "ab:cd:ef:01:23:45",
-                    "serial_number": "1W111111111111",
-                },
-                "model": {
-                    "id": "appliance-modelid",
-                    "manufacturer": "XXX",
-                    "remote_name": "abc123",
-                    "name": "XXX AC 001",
-                    "image": "ico_appliance_model",
-                },
-                "nickname": "appliance-nickname",
-                "image": "ico_appliance",
-                "type": "AC",
-                "settings": {
-                    "temp": "27",
-                    "mode": "cool",
-                    "vol": "auto",
-                    "dir": "swing",
-                    "button": "power-off",
-                },
-                "aircon": {
-                    "range": {
-                        "modes": {
-                            "mode1": {
-                                "temp": ["1", "2", "3"],
-                                "vol": ["1", "auto"],
-                                "dir": ["1", "2"],
-                            },
-                            "mode2": {
-                                "temp": ["1", "2"],
-                                "vol": ["1", "2", "auto"],
-                                "dir": ["auto", "swing"],
-                            },
-                        },
-                        "fixedButtons": ["power-off"],
-                    },
-                    "tempUnit": "c",
-                },
-                "signals": [
-                    {
-                        "id": "signal-id",
-                        "name": "signal-name",
-                        "image": "ico_signal",
-                    }
-                ],
-                "tv": {
-                    "state": {"input": "t"},
-                    "buttons": [
-                        {
-                            "name": "button-name",
-                            "image": "ico_button",
-                            "label": "button_label",
-                        }
-                    ],
-                },
-            }
-        ]
         responses.add(responses.GET, url, json=data, status=200)
 
         result = runner.invoke(get_appliances)
@@ -292,41 +187,21 @@ class TestCLI:
 
     @responses.activate
     def test_create_appliance(self, runner, set_token):
-        device = "device-id"
-        nickname = "my-device"
-        image = "ico_appliance"
+        data = load_json("testdata/appliance.json")
         url = f"{BASE_URL}/1/appliances"
-        data = {
-            "id": "appliance-id",
-            "device": {
-                "id": "device-id-123-abc",
-                "name": "Remo",
-                "temperature_offset": 0,
-                "humidity_offset": 0,
-                "created_at": "2020-01-01T01:23:45Z",
-                "updated_at": "2020-01-01T01:23:45Z",
-                "firmware_version": "Remo/1.0.23",
-                "mac_address": "ab:cd:ef:01:23:45",
-                "serial_number": "1W111111111111",
-            },
-            "nickname": "my-appliance",
-            "image": "ico_appliance",
-            "model": None,
-            "type": "IR",
-            "settings": None,
-            "aircon": None,
-            "signals": [],
-        }
         responses.add(responses.POST, url, json=data, status=201)
 
-        result = runner.invoke(create_appliance, [device, nickname, image])
+        result = runner.invoke(
+            create_appliance,
+            [data["device"]["id"], data["nickname"], data["image"]],
+        )
 
         assert result.exit_code == 0
         assert len(responses.calls) == 1
         assert responses.calls[0].request.url == url
-        assert (
-            responses.calls[0].request.body
-            == f"device={device}&nickname={nickname}&image={image}"
+        assert responses.calls[0].request.body == (
+            f"device={data['device']['id']}&nickname={data['nickname']}&"
+            f"image={data['image']}"
         )
 
     @responses.activate
@@ -360,7 +235,7 @@ class TestCLI:
     @responses.activate
     def test_update_appliance(self, runner, set_token):
         appliance = "appliance-id"
-        nickname = "appliance-nickname"
+        nickname = "nickname"
         image = "ico_appliance"
         url = f"{BASE_URL}/1/appliances/{appliance}"
         responses.add(responses.POST, url, status=200)
@@ -409,11 +284,11 @@ class TestCLI:
     @responses.activate
     def test_get_signals(self, runner, set_token):
         appliance = "appliance-id"
-        url = f"{BASE_URL}/1/appliances/{appliance}/signals"
         data = [
             {"id": "id-1", "name": "signal1", "image": "ico_signal"},
             {"id": "id-2", "name": "signal2", "image": "ico_signal"},
         ]
+        url = f"{BASE_URL}/1/appliances/{appliance}/signals"
         responses.add(responses.GET, url, json=data, status=200)
 
         result = runner.invoke(get_signals, [appliance])
@@ -429,8 +304,8 @@ class TestCLI:
         name = "signal1"
         message = '{"freq": 38, "data": [2523, 2717, 786], "format": "us"}'
         image = "ico_signal"
+        data = load_json("testdata/signal.json")
         url = f"{BASE_URL}/1/appliances/{appliance}/signals"
-        data = {"id": "signal-id", "name": name, "image": image}
         responses.add(
             responses.POST, url, json=data, status=201,
         )

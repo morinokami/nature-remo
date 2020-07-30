@@ -1,0 +1,14 @@
+{
+  "state": {
+    "brightness": "bright",
+    "power": "on",
+    "last_button": "button"
+  },
+  "buttons": [
+    {
+      "name": "button-name",
+      "image": "ico_button",
+      "label": "button_label"
+    }
+  ]
+}

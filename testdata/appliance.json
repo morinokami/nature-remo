@@ -1,0 +1,90 @@
+{
+  "id": "appliance-id",
+  "device": {
+    "id": "device-id",
+    "name": "device_name",
+    "temperature_offset": 0,
+    "humidity_offset": 0,
+    "created_at": "2020-01-01T01:23:45Z",
+    "updated_at": "2020-01-01T01:23:45Z",
+    "firmware_version": "Remo/1.0.23",
+    "mac_address": "ab:cd:ef:01:23:45",
+    "serial_number": "1W111111111111"
+  },
+  "model": {
+    "id": "model-id",
+    "manufacturer": "XXX",
+    "remote_name": "abc123",
+    "name": "XXX AC 001",
+    "image": "ico_model"
+  },
+  "nickname": "nickname",
+  "image": "ico_appliance",
+  "type": "AC",
+  "settings": {
+    "temp": "27",
+    "mode": "cool",
+    "vol": "auto",
+    "dir": "swing",
+    "button": "power-off"
+  },
+  "aircon": {
+    "range": {
+      "modes": {
+        "mode1": {
+          "temp": [
+            "1",
+            "2",
+            "3"
+          ],
+          "vol": [
+            "1",
+            "auto"
+          ],
+          "dir": [
+            "1",
+            "2"
+          ]
+        },
+        "mode2": {
+          "temp": [
+            "1",
+            "2"
+          ],
+          "vol": [
+            "1",
+            "2",
+            "auto"
+          ],
+          "dir": [
+            "auto",
+            "swing"
+          ]
+        }
+      },
+      "fixedButtons": [
+        "power-off"
+      ]
+    },
+    "tempUnit": "c"
+  },
+  "signals": [
+    {
+      "id": "signal-id",
+      "name": "signal-name",
+      "image": "ico_signal"
+    }
+  ],
+  "tv": {
+    "state": {
+      "input": "t"
+    },
+    "buttons": [
+      {
+        "name": "button-name",
+        "image": "ico_button",
+        "label": "button_label"
+      }
+    ]
+  }
+}
