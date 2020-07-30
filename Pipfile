@@ -18,6 +18,7 @@ setuptools = "*"
 wheel = "*"
 twine = "*"
 pytest-watch = "*"
+mypy = "*"
 
 [requires]
 python_version = "3.8"

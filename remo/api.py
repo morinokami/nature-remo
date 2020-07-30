@@ -3,6 +3,7 @@ from datetime import datetime
 from enum import auto
 from enum import Enum
 from typing import List
+from typing import Optional
 
 import requests
 
@@ -42,10 +43,10 @@ def enable_debug_mode():
 
 @dataclass
 class RateLimit:
-    checked_at: datetime = None
-    limit: int = None
-    remaining: int = None
-    reset: datetime = None
+    checked_at: Optional[datetime] = None
+    limit: Optional[int] = None
+    remaining: Optional[int] = None
+    reset: Optional[datetime] = None
 
 
 class NatureRemoAPI:
@@ -71,7 +72,7 @@ class NatureRemoAPI:
         try:
             if method == HTTPMethod.GET:
                 return requests.get(url, headers=headers)
-            elif method == HTTPMethod.POST:
+            else:
                 return requests.post(url, headers=headers, data=data)
         except requests.RequestException as e:
             raise NatureRemoError(e)
@@ -433,16 +434,13 @@ class NatureRemoLocalAPI:
         }
         url = f"http://{self.addr}{endpoint}"
 
-        if method == HTTPMethod.GET:
-            try:
+        try:
+            if method == HTTPMethod.GET:
                 return requests.get(url, headers=headers)
-            except requests.RequestException as e:
-                raise NatureRemoError(str(e))
-        elif method == HTTPMethod.POST:
-            try:
+            else:
                 return requests.post(url, headers=headers, data=data)
-            except requests.RequestException as e:
-                raise NatureRemoError(str(e))
+        except requests.RequestException as e:
+            raise NatureRemoError(e)
 
     def __get_json(self, resp: requests.models.Response):
         if resp.ok:
