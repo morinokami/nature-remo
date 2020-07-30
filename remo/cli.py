@@ -255,7 +255,7 @@ def update_appliance(
     IMAGE: Basename of the image file included in the app.
     """
     api = NatureRemoAPI(token, debug)
-    api.update_appliance(id, nickname, image)
+    click.echo(api.update_appliance(id, nickname, image).as_json_string())
 
 
 @appliance.command("update_aircon_settings")

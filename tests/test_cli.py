@@ -234,13 +234,13 @@ class TestCLI:
 
     @responses.activate
     def test_update_appliance(self, runner, set_token):
-        appliance = "appliance-id"
-        nickname = "nickname"
-        image = "ico_appliance"
-        url = f"{BASE_URL}/1/appliances/{appliance}"
-        responses.add(responses.POST, url, status=200)
+        data = load_json("testdata/appliance_minimal.json")
+        url = f"{BASE_URL}/1/appliances/{data['id']}"
+        responses.add(responses.POST, url, json=data, status=200)
 
-        result = runner.invoke(update_appliance, [appliance, nickname, image])
+        result = runner.invoke(
+            update_appliance, [data["id"], data["nickname"], data["image"]]
+        )
 
         assert result.exit_code == 0
         assert len(responses.calls) == 1

@@ -272,8 +272,8 @@ class NatureRemoAPI:
         resp = self.__request(
             endpoint, HTTPMethod.POST, {"nickname": nickname, "image": image}
         )
-        if not resp.ok:
-            raise NatureRemoError(build_error_message(resp))
+        json = self.__get_json(resp)
+        return ApplianceSchema().load(json)
 
     def update_aircon_settings(
         self,

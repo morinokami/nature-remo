@@ -406,22 +406,23 @@ class TestAPI:
 
     @responses.activate
     def test_update_appliance(self, api):
-        appliance = "appliance-id"
-        nickname = "appliance-nickname"
-        image = "ico_appliance"
-        url = f"{BASE_URL}/1/appliances/{appliance}"
-        responses.add(responses.POST, url, status=200)
+        data = load_json("testdata/appliance_minimal.json")
+        url = f"{BASE_URL}/1/appliances/{data['id']}"
+        responses.add(responses.POST, url, json=data, status=200)
 
-        try:
-            api.update_appliance(appliance, nickname, image)
-        except NatureRemoError as e:
-            pytest.fail(str(e))
+        appliance = api.update_appliance(
+            data["id"], data["nickname"], data["image"]
+        )
 
+        assert type(appliance) is Appliance
+        assert appliance.id == data["id"]
+        assert appliance.nickname == data["nickname"]
+        assert appliance.image == data["image"]
         assert len(responses.calls) == 1
         assert responses.calls[0].request.url == url
         assert (
             responses.calls[0].request.body
-            == f"nickname={nickname}&image={image}"
+            == f"nickname={data['nickname']}&image={data['image']}"
         )
 
     @responses.activate
