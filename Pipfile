@@ -17,6 +17,7 @@ responses = "*"
 setuptools = "*"
 wheel = "*"
 twine = "*"
+pytest-watch = "*"
 
 [requires]
 python_version = "3.8"
