@@ -6,7 +6,6 @@ import responses
 from click.testing import CliRunner
 
 from .utils import load_json
-from remo import NatureRemoError
 from remo.api import BASE_URL
 from remo.cli import create_appliance
 from remo.cli import create_signal
@@ -53,9 +52,7 @@ class TestCLI:
         monkeypatch.delenv("REMO_ACCESS_TOKEN", raising=False)
         result = runner.invoke(get_user)
 
-        assert result.exit_code != 0
-        assert type(result.exception) is NatureRemoError
-        assert str(result.exception) == "Access token must be supplied"
+        assert result.output.strip() == "Error: Access token must be supplied"
 
     @responses.activate
     def test_get_user(self, runner, set_token):

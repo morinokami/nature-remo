@@ -24,6 +24,18 @@ def check_token(f: Callable) -> Callable:
     return wrapper
 
 
+def handle_error(f: Callable) -> Callable:
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        try:
+            f(*args, **kwargs)
+        except NatureRemoError as e:
+            click.echo(f"Error: {e}")
+            click.Abort()
+
+    return wrapper
+
+
 @click.group()
 def main():
     pass
@@ -37,6 +49,7 @@ def user():
 @user.command("get")
 @click.option("--token", default="")
 @click.option("--debug", default=False, is_flag=True)
+@handle_error
 @check_token
 def get_user(token: str, debug: bool):
     """Fetch the authenticated user's information."""
@@ -48,6 +61,7 @@ def get_user(token: str, debug: bool):
 @click.option("--token", default="")
 @click.option("--debug", default=False, is_flag=True)
 @click.argument("nickname")
+@handle_error
 @check_token
 def update_user(token: str, debug: bool, nickname: str):
     """Update authenticated user's information.
@@ -66,6 +80,7 @@ def device():
 @device.command("get")
 @click.option("--token", default="")
 @click.option("--debug", default=False, is_flag=True)
+@handle_error
 @check_token
 def get_devices(token: str, debug: bool):
     """Fetch the list of Remo devices the user has access to."""
@@ -79,6 +94,7 @@ def get_devices(token: str, debug: bool):
 @click.option("--debug", default=False, is_flag=True)
 @click.argument("id")
 @click.argument("name")
+@handle_error
 @check_token
 def update_device(token: str, debug: bool, id: str, name: str):
     """Update Remo.
@@ -94,6 +110,7 @@ def update_device(token: str, debug: bool, id: str, name: str):
 @click.option("--token", default="")
 @click.option("--debug", default=False, is_flag=True)
 @click.argument("id")
+@handle_error
 @check_token
 def delete_device(token: str, debug: bool, id: str):
     """Delete Remo.
@@ -109,6 +126,7 @@ def delete_device(token: str, debug: bool, id: str):
 @click.option("--debug", default=False, is_flag=True)
 @click.argument("id")
 @click.argument("offset", type=int)
+@handle_error
 @check_token
 def update_temperature_offset(token: str, debug: bool, id: str, offset: int):
     """Update temperature offset.
@@ -125,6 +143,7 @@ def update_temperature_offset(token: str, debug: bool, id: str, offset: int):
 @click.option("--debug", default=False, is_flag=True)
 @click.argument("id")
 @click.argument("offset", type=int)
+@handle_error
 @check_token
 def update_humidity_offset(token: str, debug: bool, id: str, offset: int):
     """Update humidity offset.
@@ -145,6 +164,7 @@ def appliance():
 @click.option("--token", default="")
 @click.option("--debug", default=False, is_flag=True)
 @click.argument("message")
+@handle_error
 @check_token
 def detect_appliance(token: str, debug: bool, message: str):
     """Find the air conditioner best matching the provided infrared signal.
@@ -163,6 +183,7 @@ def detect_appliance(token: str, debug: bool, message: str):
 @appliance.command("get")
 @click.option("--token", default="")
 @click.option("--debug", default=False, is_flag=True)
+@handle_error
 @check_token
 def get_appliances(token: str, debug: bool):
     """Fetch the list of appliances."""
@@ -186,6 +207,7 @@ def get_appliances(token: str, debug: bool):
 @click.argument("device")
 @click.argument("nickname")
 @click.argument("image")
+@handle_error
 @check_token
 def create_appliance(
     token: str,
@@ -214,6 +236,7 @@ def create_appliance(
 @click.option("--token", default="")
 @click.option("--debug", default=False, is_flag=True)
 @click.argument("appliances")
+@handle_error
 @check_token
 def update_appliance_orders(token: str, debug: bool, appliances: str):
     """Reorder appliances.
@@ -228,6 +251,7 @@ def update_appliance_orders(token: str, debug: bool, appliances: str):
 @click.option("--token", default="")
 @click.option("--debug", default=False, is_flag=True)
 @click.argument("id")
+@handle_error
 @check_token
 def delete_appliance(token: str, debug: bool, id: str):
     """Delete appliance.
@@ -244,6 +268,7 @@ def delete_appliance(token: str, debug: bool, id: str):
 @click.argument("id")
 @click.argument("nickname")
 @click.argument("image")
+@handle_error
 @check_token
 def update_appliance(
     token: str, debug: bool, id: str, nickname: str, image: str
@@ -267,6 +292,7 @@ def update_appliance(
 @click.option("--air-direction", default=None, help="AC air direction.")
 @click.option("--button", default=None, help="Button.")
 @click.argument("id")
+@handle_error
 @check_token
 def update_aircon_settings(
     token: str,
@@ -293,6 +319,7 @@ def update_aircon_settings(
 @click.option("--debug", default=False, is_flag=True)
 @click.argument("id")
 @click.argument("button")
+@handle_error
 @check_token
 def send_tv_infrared_signal(token: str, debug: bool, id: str, button: str):
     """Send tv infrared signal.
@@ -309,6 +336,7 @@ def send_tv_infrared_signal(token: str, debug: bool, id: str, button: str):
 @click.option("--debug", default=False, is_flag=True)
 @click.argument("id")
 @click.argument("button")
+@handle_error
 @check_token
 def send_light_infrared_signal(token: str, debug: bool, id: str, button: str):
     """Send light infrared signal.
@@ -329,6 +357,7 @@ def signal():
 @click.option("--token", default="")
 @click.option("--debug", default=False, is_flag=True)
 @click.argument("appliance")
+@handle_error
 @check_token
 def get_signals(token: str, debug: bool, appliance: str):
     """Fetch signals registered under this appliance.
@@ -348,6 +377,7 @@ def get_signals(token: str, debug: bool, appliance: str):
 @click.argument("name")
 @click.argument("message")
 @click.argument("image")
+@handle_error
 @check_token
 def create_signal(
     token: str,
@@ -376,6 +406,7 @@ def create_signal(
 @click.option("--debug", default=False, is_flag=True)
 @click.argument("appliance")
 @click.argument("signals")
+@handle_error
 @check_token
 def update_signal_orders(
     token: str, debug: bool, appliance: str, signals: str
@@ -395,6 +426,7 @@ def update_signal_orders(
 @click.argument("id")
 @click.argument("name")
 @click.argument("image")
+@handle_error
 @check_token
 def update_signal(token: str, debug: bool, id: str, name: str, image: str):
     """Update infrared signal.
@@ -411,6 +443,7 @@ def update_signal(token: str, debug: bool, id: str, name: str, image: str):
 @click.option("--token", default="")
 @click.option("--debug", default=False, is_flag=True)
 @click.argument("id")
+@handle_error
 @check_token
 def delete_signal(token: str, debug: bool, id: str):
     """Delete infrared signal.
@@ -425,6 +458,7 @@ def delete_signal(token: str, debug: bool, id: str):
 @click.option("--token", default="")
 @click.option("--debug", default=False, is_flag=True)
 @click.argument("id")
+@handle_error
 @check_token
 def send_signal(token: str, debug: bool, id: str):
     """Send infrared signal.
@@ -443,6 +477,7 @@ def local():
 @local.command("get")
 @click.option("--debug", default=False, is_flag=True)
 @click.argument("ip_addr")
+@handle_error
 def get_ir_signal(debug: bool, ip_addr: str):
     """Fetch the newest received IR signal.
 
@@ -456,6 +491,7 @@ def get_ir_signal(debug: bool, ip_addr: str):
 @click.option("--debug", default=False, is_flag=True)
 @click.argument("ip_addr")
 @click.argument("message")
+@handle_error
 def send_ir_signal(debug: bool, ip_addr: str, message: str):
     """Emit IR signals provided by request body.
 
