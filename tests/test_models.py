@@ -2,6 +2,7 @@ import json
 from datetime import datetime
 from datetime import timezone
 
+from .utils import load_json
 from remo import AirConParamsSchema
 from remo import AirConRangeModeSchema
 from remo import AirConRangeSchema
@@ -31,113 +32,72 @@ def sorted_json(d: dict) -> str:
 
 
 def test_user():
-    user_id = "user-id-123-abc"
-    user_nickname = "lorem ipsum"
-    data = {"id": user_id, "nickname": user_nickname}
-
+    data = load_json("testdata/user.json")
     user = UserSchema().load(data)
 
-    assert user.id == user_id
-    assert user.nickname == user_nickname
+    assert user.id == data["id"]
+    assert user.nickname == data["nickname"]
 
     assert user.as_json_string() == sorted_json(data)
-    assert str(user) == f"User(id='{user_id}', nickname='{user_nickname}')"
+    assert str(user) == (
+        f"User(id='{data['id']}', nickname='{data['nickname']}')"
+    )
 
 
 def test_device_core():
-    device_id = "device-id-123-abc"
-    device_name = "Remo"
-    temperature_offset = 0
-    humidity_offset = 0
-    dummy_datetime = "2020-01-01T01:23:45Z"
-    firmware_version = "Remo/1.0.23"
-    mac_address = "ab:cd:ef:01:23:45"
-    serial_number = "1W111111111111"
-    data = {
-        "id": device_id,
-        "name": device_name,
-        "temperature_offset": temperature_offset,
-        "humidity_offset": humidity_offset,
-        "created_at": dummy_datetime,
-        "updated_at": dummy_datetime,
-        "firmware_version": firmware_version,
-        "mac_address": mac_address,
-        "serial_number": serial_number,
-    }
-
+    data = load_json("testdata/device_core.json")
     device_core = DeviceCoreSchema().load(data)
 
-    assert device_core.id == device_id
-    assert device_core.name == device_name
-    assert device_core.temperature_offset == temperature_offset
-    assert device_core.humidity_offset == humidity_offset
-    assert device_core.created_at == str_to_datetime(dummy_datetime)
-    assert device_core.updated_at == str_to_datetime(dummy_datetime)
-    assert device_core.firmware_version == firmware_version
-    assert device_core.mac_address == mac_address
-    assert device_core.serial_number == serial_number
+    assert device_core.id == data["id"]
+    assert device_core.name == data["name"]
+    assert device_core.temperature_offset == data["temperature_offset"]
+    assert device_core.humidity_offset == data["humidity_offset"]
+    assert device_core.created_at == str_to_datetime(data["created_at"])
+    assert device_core.updated_at == str_to_datetime(data["updated_at"])
+    assert device_core.firmware_version == data["firmware_version"]
+    assert device_core.mac_address == data["mac_address"]
+    assert device_core.serial_number == data["serial_number"]
 
     assert device_core.as_json_string()
     assert str(device_core)
 
 
 def test_device():
-    device_id = "device-id-123-abc"
-    device_name = "Remo"
-    temperature_offset = 0
-    humidity_offset = 0
-    dummy_datetime = "2020-01-01T01:23:45Z"
-    firmware_version = "Remo/1.0.23"
-    mac_address = "ab:cd:ef:01:23:45"
-    serial_number = "1W111111111111"
-    hu_val = 76
-    il_val = 0
-    mo_val = 1
-    te_val = 25.149109
-    data = {
-        "id": device_id,
-        "name": device_name,
-        "temperature_offset": temperature_offset,
-        "humidity_offset": humidity_offset,
-        "created_at": dummy_datetime,
-        "updated_at": dummy_datetime,
-        "firmware_version": firmware_version,
-        "mac_address": mac_address,
-        "serial_number": serial_number,
-        "newest_events": {
-            "hu": {"val": hu_val, "created_at": dummy_datetime},
-            "il": {"val": il_val, "created_at": dummy_datetime},
-            "mo": {"val": mo_val, "created_at": dummy_datetime},
-            "te": {"val": te_val, "created_at": dummy_datetime},
-        },
-    }
-
+    data = load_json("testdata/device.json")
     device = DeviceSchema().load(data)
 
-    assert device.id == device_id
-    assert device.name == device_name
-    assert device.temperature_offset == temperature_offset
-    assert device.humidity_offset == humidity_offset
-    assert device.created_at == str_to_datetime(dummy_datetime)
-    assert device.updated_at == str_to_datetime(dummy_datetime)
-    assert device.firmware_version == firmware_version
-    assert device.mac_address == mac_address
-    assert device.serial_number == serial_number
-    assert device.newest_events["hu"]["val"] == hu_val
+    assert device.id == data["id"]
+    assert device.name == data["name"]
+    assert device.temperature_offset == data["temperature_offset"]
+    assert device.humidity_offset == data["humidity_offset"]
+    assert device.created_at == str_to_datetime(data["created_at"])
+    assert device.updated_at == str_to_datetime(data["updated_at"])
+    assert device.firmware_version == data["firmware_version"]
+    assert device.mac_address == data["mac_address"]
+    assert device.serial_number == data["serial_number"]
+    assert (
+        device.newest_events["hu"]["val"] == data["newest_events"]["hu"]["val"]
+    )
     assert device.newest_events["hu"]["created_at"] == str_to_datetime(
-        dummy_datetime
+        data["newest_events"]["hu"]["created_at"]
     )
-    assert device.newest_events["il"]["val"] == il_val
+    assert (
+        device.newest_events["il"]["val"] == data["newest_events"]["il"]["val"]
+    )
     assert device.newest_events["il"]["created_at"] == str_to_datetime(
-        dummy_datetime
+        data["newest_events"]["il"]["created_at"]
     )
-    assert device.newest_events["mo"]["val"] == mo_val
+    assert (
+        device.newest_events["mo"]["val"] == data["newest_events"]["mo"]["val"]
+    )
     assert device.newest_events["mo"]["created_at"] == str_to_datetime(
-        dummy_datetime
+        data["newest_events"]["mo"]["created_at"]
     )
-    assert device.newest_events["te"]["val"] == te_val
+    assert (
+        device.newest_events["te"]["val"] == data["newest_events"]["te"]["val"]
+    )
     assert device.newest_events["te"]["created_at"] == str_to_datetime(
-        dummy_datetime
+        data["newest_events"]["te"]["created_at"]
     )
 
     assert device.as_json_string()
@@ -145,481 +105,315 @@ def test_device():
 
 
 def test_appliance_model():
-    id = "appliance-id"
-    manufacturer = "XXX"
-    remote_name = "abc123"
-    name = "XXX AC 001"
-    image = "ico_appliance"
-    data = {
-        "id": id,
-        "manufacturer": manufacturer,
-        "remote_name": remote_name,
-        "name": name,
-        "image": image,
-    }
-
+    data = load_json("testdata/appliance_model.json")
     appliance_model = ApplianceModelSchema().load(data)
 
-    assert appliance_model.id == id
-    assert appliance_model.manufacturer == manufacturer
-    assert appliance_model.remote_name == remote_name
-    assert appliance_model.name == name
-    assert appliance_model.image == image
+    assert appliance_model.id == data["id"]
+    assert appliance_model.manufacturer == data["manufacturer"]
+    assert appliance_model.remote_name == data["remote_name"]
+    assert appliance_model.name == data["name"]
+    assert appliance_model.image == data["image"]
 
     assert appliance_model.as_json_string() == sorted_json(data)
-    assert (
-        str(appliance_model)
-        == f"ApplianceModel(id='{id}', manufacturer='{manufacturer}', "
-        + f"remote_name='{remote_name}', name='{name}', image='{image}')"
+    assert str(appliance_model) == (
+        f"ApplianceModel(id='{data['id']}', "
+        f"manufacturer='{data['manufacturer']}', "
+        f"remote_name='{data['remote_name']}', "
+        f"name='{data['name']}', image='{data['image']}')"
     )
 
 
 def test_aircon_params():
-    temp = "27"
-    mode = "cool"
-    vol = "auto"
-    dir = "swing"
-    button = "power-off"
-    data = {
-        "temp": temp,
-        "mode": mode,
-        "vol": vol,
-        "dir": dir,
-        "button": button,
-    }
-
+    data = load_json("testdata/aircon_params.json")
     aircon_params = AirConParamsSchema().load(data)
 
-    assert aircon_params.temp == temp
-    assert aircon_params.mode == mode
-    assert aircon_params.vol == vol
-    assert aircon_params.dir == dir
-    assert aircon_params.button == button
+    assert aircon_params.temp == data["temp"]
+    assert aircon_params.mode == data["mode"]
+    assert aircon_params.vol == data["vol"]
+    assert aircon_params.dir == data["dir"]
+    assert aircon_params.button == data["button"]
 
     assert aircon_params.as_json_string() == sorted_json(data)
-    assert (
-        str(aircon_params)
-        == f"AirConParams(temp='{temp}', mode='{mode}', vol='{vol}', "
-        + f"dir='{dir}', button='{button}')"
+    assert str(aircon_params) == (
+        f"AirConParams(temp='{data['temp']}', mode='{data['mode']}', "
+        f"vol='{data['vol']}', dir='{data['dir']}', "
+        f"button='{data['button']}')"
     )
 
 
 def test_appliance_model_and_params():
-    id = "appliance-id"
-    manufacturer = "XXX"
-    remote_name = "abc123"
-    name = "XXX AC 001"
-    image = "ico_appliance"
-    model = {
-        "id": id,
-        "manufacturer": manufacturer,
-        "remote_name": remote_name,
-        "name": name,
-        "image": image,
-    }
-    temp = "27"
-    mode = "cool"
-    vol = "auto"
-    dir = "swing"
-    button = "power-off"
-    params = {
-        "temp": temp,
-        "mode": mode,
-        "vol": vol,
-        "dir": dir,
-        "button": button,
-    }
-    data = {"model": model, "params": params}
-
+    data = load_json("testdata/appliance_model_and_params.json")
     model_and_params = ApplianceModelAndParamsSchema().load(data)
 
-    assert model_and_params.model.id == id
-    assert model_and_params.model.manufacturer == manufacturer
-    assert model_and_params.model.remote_name == remote_name
-    assert model_and_params.model.name == name
-    assert model_and_params.model.image == image
-    assert model_and_params.params.temp == temp
-    assert model_and_params.params.mode == mode
-    assert model_and_params.params.vol == vol
-    assert model_and_params.params.dir == dir
-    assert model_and_params.params.button == button
+    assert model_and_params.model.id == data["model"]["id"]
+    assert model_and_params.model.manufacturer == data["model"]["manufacturer"]
+    assert model_and_params.model.remote_name == data["model"]["remote_name"]
+    assert model_and_params.model.name == data["model"]["name"]
+    assert model_and_params.model.image == data["model"]["image"]
+    assert model_and_params.params.temp == data["params"]["temp"]
+    assert model_and_params.params.mode == data["params"]["mode"]
+    assert model_and_params.params.vol == data["params"]["vol"]
+    assert model_and_params.params.dir == data["params"]["dir"]
+    assert model_and_params.params.button == data["params"]["button"]
 
     assert model_and_params.as_json_string() == sorted_json(data)
     assert str(model_and_params)
 
 
 def test_aircon_range_mode():
-    temp = ["25", "26", "27"]
-    vol = ["1", "2", "3", "auto"]
-    dir = ["1", "2", "auto", "swing"]
-    data = {"temp": temp, "vol": vol, "dir": dir}
-
+    data = load_json("testdata/aircon_range_mode.json")
     aircon_range_mode = AirConRangeModeSchema().load(data)
 
-    assert aircon_range_mode.temp == temp
-    assert aircon_range_mode.vol == vol
-    assert aircon_range_mode.dir == dir
+    assert aircon_range_mode.temp == data["temp"]
+    assert aircon_range_mode.vol == data["vol"]
+    assert aircon_range_mode.dir == data["dir"]
 
     assert aircon_range_mode.as_json_string() == sorted_json(data)
-    assert (
-        str(aircon_range_mode)
-        == f"AirConRangeMode(temp={temp}, vol={vol}, dir={dir})"
+    assert str(aircon_range_mode) == (
+        f"AirConRangeMode(temp={data['temp']}, vol={data['vol']}, "
+        f"dir={data['dir']})"
     )
 
 
 def test_aircon_range():
-    modes = {
-        "mode1": {
-            "temp": ["1", "2", "3"],
-            "vol": ["1", "auto"],
-            "dir": ["1", "2"],
-        },
-        "mode2": {
-            "temp": ["1", "2"],
-            "vol": ["1", "2", "auto"],
-            "dir": ["auto", "swing"],
-        },
-    }
-    fixedButtons = ["power-off"]
-    data = {"modes": modes, "fixedButtons": fixedButtons}
-
+    data = load_json("testdata/aircon_range.json")
     aircon_range = AirConRangeSchema().load(data)
 
     assert "mode1" in aircon_range.modes
-    assert aircon_range.modes["mode1"].temp == modes["mode1"]["temp"]
-    assert aircon_range.modes["mode1"].vol == modes["mode1"]["vol"]
-    assert aircon_range.modes["mode1"].dir == modes["mode1"]["dir"]
+    assert aircon_range.modes["mode1"].temp == data["modes"]["mode1"]["temp"]
+    assert aircon_range.modes["mode1"].vol == data["modes"]["mode1"]["vol"]
+    assert aircon_range.modes["mode1"].dir == data["modes"]["mode1"]["dir"]
     assert "mode2" in aircon_range.modes
-    assert aircon_range.modes["mode2"].temp == modes["mode2"]["temp"]
-    assert aircon_range.modes["mode2"].vol == modes["mode2"]["vol"]
-    assert aircon_range.modes["mode2"].dir == modes["mode2"]["dir"]
-    assert aircon_range.fixedButtons == fixedButtons
+    assert aircon_range.modes["mode2"].temp == data["modes"]["mode2"]["temp"]
+    assert aircon_range.modes["mode2"].vol == data["modes"]["mode2"]["vol"]
+    assert aircon_range.modes["mode2"].dir == data["modes"]["mode2"]["dir"]
+    assert aircon_range.fixedButtons == data["fixedButtons"]
 
     assert aircon_range.as_json_string() == sorted_json(data)
     assert str(aircon_range)
 
 
 def test_aircon():
-    modes = {
-        "mode1": {
-            "temp": ["1", "2", "3"],
-            "vol": ["1", "auto"],
-            "dir": ["1", "2"],
-        },
-        "mode2": {
-            "temp": ["1", "2"],
-            "vol": ["1", "2", "auto"],
-            "dir": ["auto", "swing"],
-        },
-    }
-    range = {
-        "modes": modes,
-        "fixedButtons": ["power-off"],
-    }
-    tempUnit = "c"
-    data = {"range": range, "tempUnit": tempUnit}
-
+    data = load_json("testdata/aircon.json")
     aircon = AirConSchema().load(data)
 
     assert "mode1" in aircon.range.modes
-    assert aircon.range.modes["mode1"].temp == modes["mode1"]["temp"]
-    assert aircon.range.modes["mode1"].vol == modes["mode1"]["vol"]
-    assert aircon.range.modes["mode1"].dir == modes["mode1"]["dir"]
+    assert (
+        aircon.range.modes["mode1"].temp
+        == data["range"]["modes"]["mode1"]["temp"]
+    )
+    assert (
+        aircon.range.modes["mode1"].vol
+        == data["range"]["modes"]["mode1"]["vol"]
+    )
+    assert (
+        aircon.range.modes["mode1"].dir
+        == data["range"]["modes"]["mode1"]["dir"]
+    )
     assert "mode2" in aircon.range.modes
-    assert aircon.range.modes["mode2"].temp == modes["mode2"]["temp"]
-    assert aircon.range.modes["mode2"].vol == modes["mode2"]["vol"]
-    assert aircon.range.modes["mode2"].dir == modes["mode2"]["dir"]
-    assert aircon.range.fixedButtons == range["fixedButtons"]
-    assert aircon.tempUnit == tempUnit
+    assert (
+        aircon.range.modes["mode2"].temp
+        == data["range"]["modes"]["mode2"]["temp"]
+    )
+    assert (
+        aircon.range.modes["mode2"].vol
+        == data["range"]["modes"]["mode2"]["vol"]
+    )
+    assert (
+        aircon.range.modes["mode2"].dir
+        == data["range"]["modes"]["mode2"]["dir"]
+    )
+    assert aircon.range.fixedButtons == data["range"]["fixedButtons"]
+    assert aircon.tempUnit == data["tempUnit"]
 
     assert aircon.as_json_string() == sorted_json(data)
     assert str(aircon)
 
 
 def test_signal():
-    id = "signal-id"
-    name = "signal-name"
-    image = "ico_signal"
-    data = {"id": id, "name": name, "image": image}
-
+    data = load_json("testdata/signal.json")
     signal = SignalSchema().load(data)
 
-    assert signal.id == id
-    assert signal.name == name
-    assert signal.image == image
+    assert signal.id == data["id"]
+    assert signal.name == data["name"]
+    assert signal.image == data["image"]
 
     assert signal.as_json_string() == sorted_json(data)
-    assert str(signal) == f"Signal(id='{id}', name='{name}', image='{image}')"
+    assert str(signal) == (
+        f"Signal(id='{data['id']}', name='{data['name']}', "
+        f"image='{data['image']}')"
+    )
 
 
 def test_button():
-    name = "button-name"
-    image = "ico_button"
-    label = "button_label"
-    data = {"name": name, "image": image, "label": label}
-
+    data = load_json("testdata/button.json")
     button = ButtonSchema().load(data)
 
-    assert button.name == name
-    assert button.image == image
-    assert button.label == label
+    assert button.name == data["name"]
+    assert button.image == data["image"]
+    assert button.label == data["label"]
 
     assert button.as_json_string() == sorted_json(data)
-    assert (
-        str(button)
-        == f"Button(name='{name}', image='{image}', label='{label}')"
+    assert str(button) == (
+        f"Button(name='{data['name']}', image='{data['image']}', "
+        f"label='{data['label']}')"
     )
 
 
 def test_tv_state():
-    input = "t"
-    data = {"input": input}
-
+    data = load_json("testdata/tv_state.json")
     tv_state = TVStateSchema().load(data)
 
-    assert tv_state.input == input
+    assert tv_state.input == data["input"]
 
     assert tv_state.as_json_string() == sorted_json(data)
-    assert str(tv_state) == f"TVState(input='{input}')"
+    assert str(tv_state) == f"TVState(input='{data['input']}')"
 
 
 def test_tv():
-    state_input = "t"
-    btn_name = "button-name"
-    btn_image = "ico_button"
-    btn_label = "button_label"
-    data = {
-        "state": {"input": state_input},
-        "buttons": [
-            {"name": btn_name, "image": btn_image, "label": btn_label}
-        ],
-    }
-
+    data = load_json("testdata/tv.json")
     tv = TVSchema().load(data)
 
-    assert tv.state.input == state_input
+    assert tv.state.input == data["state"]["input"]
     assert len(tv.buttons) == 1
-    assert tv.buttons[0].name == btn_name
-    assert tv.buttons[0].image == btn_image
-    assert tv.buttons[0].label == btn_label
+    assert tv.buttons[0].name == data["buttons"][0]["name"]
+    assert tv.buttons[0].image == data["buttons"][0]["image"]
+    assert tv.buttons[0].label == data["buttons"][0]["label"]
 
     assert tv.as_json_string() == sorted_json(data)
     assert str(tv) == (
-        f"TV(state=TVState(input='{state_input}'), "
-        f"buttons=[Button(name='{btn_name}', image='{btn_image}', "
-        f"label='{btn_label}')])"
+        f"TV(state=TVState(input='{data['state']['input']}'), "
+        f"buttons=[Button(name='{data['buttons'][0]['name']}', "
+        f"image='{data['buttons'][0]['image']}', "
+        f"label='{data['buttons'][0]['label']}')])"
     )
 
 
 def test_light_state():
-    brightness = "bright"
-    power = "on"
-    last_button = "button"
-    data = {
-        "brightness": brightness,
-        "power": power,
-        "last_button": last_button,
-    }
-
+    data = load_json("testdata/light_state.json")
     light_state = LightStateSchema().load(data)
 
-    assert light_state.brightness == brightness
-    assert light_state.power == power
-    assert light_state.last_button == last_button
+    assert light_state.brightness == data["brightness"]
+    assert light_state.power == data["power"]
+    assert light_state.last_button == data["last_button"]
 
     assert light_state.as_json_string() == sorted_json(data)
-    assert (
-        str(light_state)
-        == f"LightState(brightness='{brightness}', power='{power}',"
-        + f" last_button='{last_button}')"
+    assert str(light_state) == (
+        f"LightState(brightness='{data['brightness']}', "
+        f"power='{data['power']}',"
+        f" last_button='{data['last_button']}')"
     )
 
 
 def test_light():
-    state = {
-        "brightness": "bright",
-        "power": "on",
-        "last_button": "button",
-    }
-    buttons = [
-        {
-            "name": "button-name",
-            "image": "ico_button",
-            "label": "button_label",
-        }
-    ]
-    data = {"state": state, "buttons": buttons}
-
-    light_state = LightStateSchema().load(state)
-    button = ButtonSchema().load(buttons[0])
+    data = load_json("testdata/light.json")
+    light_state = LightStateSchema().load(data["state"])
+    button = ButtonSchema().load(data["buttons"][0])
     light = LightSchema().load(data)
 
-    assert light.state.brightness == state["brightness"]
-    assert light.state.power == state["power"]
-    assert light.state.last_button == state["last_button"]
+    assert light.state.brightness == data["state"]["brightness"]
+    assert light.state.power == data["state"]["power"]
+    assert light.state.last_button == data["state"]["last_button"]
     assert len(light.buttons) == 1
-    assert light.buttons[0].name == buttons[0]["name"]
-    assert light.buttons[0].image == buttons[0]["image"]
-    assert light.buttons[0].label == buttons[0]["label"]
+    assert light.buttons[0].name == data["buttons"][0]["name"]
+    assert light.buttons[0].image == data["buttons"][0]["image"]
+    assert light.buttons[0].label == data["buttons"][0]["label"]
 
     assert light.as_json_string() == sorted_json(data)
-    assert str(light) == f"Light(state={light_state}, buttons=[{button}])"
+    assert str(light) == (f"Light(state={light_state}, buttons=[{button}])")
 
 
 def test_appliance():
-    id = "appliance-id"
-    device = {
-        "id": "device_id",
-        "name": "device_name",
-        "temperature_offset": 0,
-        "humidity_offset": 0,
-        "created_at": "2020-01-01T01:23:45Z",
-        "updated_at": "2020-01-01T01:23:45Z",
-        "firmware_version": "Remo/1.0.23",
-        "mac_address": "ab:cd:ef:01:23:45",
-        "serial_number": "1W111111111111",
-    }
-    model = {
-        "id": "appliance-modelid",
-        "manufacturer": "XXX",
-        "remote_name": "abc123",
-        "name": "XXX AC 001",
-        "image": "ico_appliance_model",
-    }
-    nickname = "appliance-nickname"
-    image = "ico_appliance"
-    type = "AC"
-    settings = {
-        "temp": "27",
-        "mode": "cool",
-        "vol": "auto",
-        "dir": "swing",
-        "button": "power-off",
-    }
-    aircon = {
-        "range": {
-            "modes": {
-                "mode1": {
-                    "temp": ["1", "2", "3"],
-                    "vol": ["1", "auto"],
-                    "dir": ["1", "2"],
-                },
-                "mode2": {
-                    "temp": ["1", "2"],
-                    "vol": ["1", "2", "auto"],
-                    "dir": ["auto", "swing"],
-                },
-            },
-            "fixedButtons": ["power-off"],
-        },
-        "tempUnit": "c",
-    }
-    signals = [
-        {"id": "signal-id", "name": "signal-name", "image": "ico_signal"}
-    ]
-    tv = {
-        "state": {"input": "t"},
-        "buttons": [
-            {
-                "name": "button-name",
-                "image": "ico_button",
-                "label": "button_label",
-            }
-        ],
-    }
-    data = {
-        "id": id,
-        "device": device,
-        "model": model,
-        "nickname": nickname,
-        "image": image,
-        "type": type,
-        "settings": settings,
-        "aircon": aircon,
-        "signals": signals,
-        "tv": tv,
-    }
-
+    data = load_json("testdata/appliance.json")
     appliance = ApplianceSchema().load(data)
 
-    assert appliance.id == id
-    assert appliance.device.id == device["id"]
-    assert appliance.device.name == device["name"]
-    assert appliance.device.temperature_offset == device["temperature_offset"]
-    assert appliance.device.humidity_offset == device["humidity_offset"]
-    assert appliance.device.created_at == str_to_datetime(device["created_at"])
-    assert appliance.device.updated_at == str_to_datetime(device["updated_at"])
-    assert appliance.device.firmware_version == device["firmware_version"]
-    assert appliance.device.mac_address == device["mac_address"]
-    assert appliance.device.serial_number == device["serial_number"]
-    assert appliance.model.id == model["id"]
-    assert appliance.model.manufacturer == model["manufacturer"]
-    assert appliance.model.remote_name == model["remote_name"]
-    assert appliance.model.name == model["name"]
-    assert appliance.model.image == model["image"]
-    assert appliance.nickname == nickname
-    assert appliance.image == image
-    assert appliance.type == type
-    assert appliance.settings.temp == settings["temp"]
-    assert appliance.settings.mode == settings["mode"]
-    assert appliance.settings.vol == settings["vol"]
-    assert appliance.settings.dir == settings["dir"]
-    assert appliance.settings.button == settings["button"]
+    assert appliance.id == data["id"]
+    assert appliance.device.id == data["device"]["id"]
+    assert appliance.device.name == data["device"]["name"]
+    assert (
+        appliance.device.temperature_offset
+        == data["device"]["temperature_offset"]
+    )
+    assert (
+        appliance.device.humidity_offset == data["device"]["humidity_offset"]
+    )
+    assert appliance.device.created_at == str_to_datetime(
+        data["device"]["created_at"]
+    )
+    assert appliance.device.updated_at == str_to_datetime(
+        data["device"]["updated_at"]
+    )
+    assert (
+        appliance.device.firmware_version == data["device"]["firmware_version"]
+    )
+    assert appliance.device.mac_address == data["device"]["mac_address"]
+    assert appliance.device.serial_number == data["device"]["serial_number"]
+    assert appliance.model.id == data["model"]["id"]
+    assert appliance.model.manufacturer == data["model"]["manufacturer"]
+    assert appliance.model.remote_name == data["model"]["remote_name"]
+    assert appliance.model.name == data["model"]["name"]
+    assert appliance.model.image == data["model"]["image"]
+    assert appliance.nickname == data["nickname"]
+    assert appliance.image == data["image"]
+    assert appliance.type == data["type"]
+    assert appliance.settings.temp == data["settings"]["temp"]
+    assert appliance.settings.mode == data["settings"]["mode"]
+    assert appliance.settings.vol == data["settings"]["vol"]
+    assert appliance.settings.dir == data["settings"]["dir"]
+    assert appliance.settings.button == data["settings"]["button"]
     assert (
         appliance.aircon.range.modes["mode1"].temp
-        == aircon["range"]["modes"]["mode1"]["temp"]
+        == data["aircon"]["range"]["modes"]["mode1"]["temp"]
     )
     assert (
         appliance.aircon.range.modes["mode1"].vol
-        == aircon["range"]["modes"]["mode1"]["vol"]
+        == data["aircon"]["range"]["modes"]["mode1"]["vol"]
     )
     assert (
         appliance.aircon.range.modes["mode1"].dir
-        == aircon["range"]["modes"]["mode1"]["dir"]
+        == data["aircon"]["range"]["modes"]["mode1"]["dir"]
     )
     assert (
         appliance.aircon.range.modes["mode2"].temp
-        == aircon["range"]["modes"]["mode2"]["temp"]
+        == data["aircon"]["range"]["modes"]["mode2"]["temp"]
     )
     assert (
         appliance.aircon.range.modes["mode2"].vol
-        == aircon["range"]["modes"]["mode2"]["vol"]
+        == data["aircon"]["range"]["modes"]["mode2"]["vol"]
     )
     assert (
         appliance.aircon.range.modes["mode2"].dir
-        == aircon["range"]["modes"]["mode2"]["dir"]
+        == data["aircon"]["range"]["modes"]["mode2"]["dir"]
     )
     assert (
-        appliance.aircon.range.fixedButtons == aircon["range"]["fixedButtons"]
+        appliance.aircon.range.fixedButtons
+        == data["aircon"]["range"]["fixedButtons"]
     )
-    assert appliance.aircon.tempUnit == aircon["tempUnit"]
+    assert appliance.aircon.tempUnit == data["aircon"]["tempUnit"]
     assert len(appliance.signals) == 1
-    assert appliance.signals[0].id == signals[0]["id"]
-    assert appliance.signals[0].name == signals[0]["name"]
-    assert appliance.signals[0].image == signals[0]["image"]
-    assert appliance.tv.state.input == tv["state"]["input"]
+    assert appliance.signals[0].id == data["signals"][0]["id"]
+    assert appliance.signals[0].name == data["signals"][0]["name"]
+    assert appliance.signals[0].image == data["signals"][0]["image"]
+    assert appliance.tv.state.input == data["tv"]["state"]["input"]
     assert len(appliance.tv.buttons) == 1
-    assert appliance.tv.buttons[0].name == tv["buttons"][0]["name"]
-    assert appliance.tv.buttons[0].image == tv["buttons"][0]["image"]
-    assert appliance.tv.buttons[0].label == tv["buttons"][0]["label"]
+    assert appliance.tv.buttons[0].name == data["tv"]["buttons"][0]["name"]
+    assert appliance.tv.buttons[0].image == data["tv"]["buttons"][0]["image"]
+    assert appliance.tv.buttons[0].label == data["tv"]["buttons"][0]["label"]
 
     assert appliance.as_json_string()
     assert str(appliance)
 
 
 def test_ir_signal():
-    freq = 38
-    data = [0]
-    format = "us"
-    signal_data = {"freq": freq, "data": data, "format": format}
+    data = load_json("testdata/ir_signal.json")
+    signal = IRSignalSchema().load(data)
 
-    signal = IRSignalSchema().load(signal_data)
+    assert signal.freq == data["freq"]
+    assert signal.data == data["data"]
+    assert signal.format == data["format"]
 
-    assert signal.freq == freq
-    assert signal.data == data
-    assert signal.format == format
-
-    assert signal.as_json_string() == sorted_json(signal_data)
-    assert (
-        str(signal) == f"IRSignal(freq={freq}, data={data}, format='{format}')"
+    assert signal.as_json_string() == sorted_json(data)
+    assert str(signal) == (
+        f"IRSignal(freq={data['freq']}, data={data['data']}, "
+        f"format='{data['format']}')"
     )

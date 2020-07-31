@@ -11,7 +11,9 @@ class NatureRemoModel:
     """Base class for Nature Remo models."""
 
     def as_json_string(self) -> str:
-        return self.schema().dumps(self, ensure_ascii=True, sort_keys=True)
+        return self.schema().dumps(  # type: ignore
+            self, ensure_ascii=True, sort_keys=True
+        )
 
 
 class UserSchema(Schema):
@@ -143,7 +145,7 @@ class Device(DeviceCore):
             serial_number,
         )
         self.newest_events = newest_events
-        self.schema = DeviceSchema
+        self.schema = DeviceSchema  # type: ignore
 
     def __repr__(self):
         return (
