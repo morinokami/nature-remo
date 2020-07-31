@@ -3,6 +3,7 @@ from datetime import datetime
 from enum import auto
 from enum import Enum
 from typing import List
+from typing import Optional
 
 import requests
 
@@ -11,6 +12,8 @@ from .__version__ import __version__
 from .errors import build_error_message
 from .errors import NatureRemoError
 from .models import Appliance
+from .models import ApplianceModelAndParams
+from .models import ApplianceModelAndParamsSchema
 from .models import ApplianceSchema
 from .models import Device
 from .models import DeviceSchema
@@ -40,10 +43,10 @@ def enable_debug_mode():
 
 @dataclass
 class RateLimit:
-    checked_at: datetime = None
-    limit: int = None
-    remaining: int = None
-    reset: datetime = None
+    checked_at: Optional[datetime] = None
+    limit: Optional[int] = None
+    remaining: Optional[int] = None
+    reset: Optional[datetime] = None
 
 
 class NatureRemoAPI:
@@ -69,10 +72,10 @@ class NatureRemoAPI:
         try:
             if method == HTTPMethod.GET:
                 return requests.get(url, headers=headers)
-            elif method == HTTPMethod.POST:
+            else:
                 return requests.post(url, headers=headers, data=data)
         except requests.RequestException as e:
-            raise NatureRemoError(str(e))
+            raise NatureRemoError(e)
 
     def __get_json(self, resp: requests.models.Response):
         self.__set_rate_limit(resp)
@@ -181,6 +184,18 @@ class NatureRemoAPI:
         if not resp.ok:
             raise NatureRemoError(build_error_message(resp))
 
+    def detect_appliance(self, message: str) -> List[ApplianceModelAndParams]:
+        """Find the air conditioner best matching the provided infrared signal.
+
+        Args:
+            message: JSON serialized object describing infrared signals.
+              Includes "data", "freq" and "format" keys.
+        """
+        endpoint = "/1/detectappliance"
+        resp = self.__request(endpoint, HTTPMethod.POST, {"message": message})
+        json = self.__get_json(resp)
+        return ApplianceModelAndParamsSchema(many=True).load(json)
+
     def get_appliances(self) -> List[Appliance]:
         """Fetch the list of appliances.
 
@@ -258,8 +273,8 @@ class NatureRemoAPI:
         resp = self.__request(
             endpoint, HTTPMethod.POST, {"nickname": nickname, "image": image}
         )
-        if not resp.ok:
-            raise NatureRemoError(build_error_message(resp))
+        json = self.__get_json(resp)
+        return ApplianceSchema().load(json)
 
     def update_aircon_settings(
         self,
@@ -419,23 +434,20 @@ class NatureRemoLocalAPI:
         }
         url = f"http://{self.addr}{endpoint}"
 
-        if method == HTTPMethod.GET:
-            try:
+        try:
+            if method == HTTPMethod.GET:
                 return requests.get(url, headers=headers)
-            except requests.RequestException as e:
-                raise NatureRemoError(str(e))
-        elif method == HTTPMethod.POST:
-            try:
+            else:
                 return requests.post(url, headers=headers, data=data)
-            except requests.RequestException as e:
-                raise NatureRemoError(str(e))
+        except requests.RequestException as e:
+            raise NatureRemoError(e)
 
     def __get_json(self, resp: requests.models.Response):
         if resp.ok:
             return resp.json()
         raise NatureRemoError(f"{resp.status_code} {resp.reason}")
 
-    def get(self) -> IRSignal:
+    def get_ir_signal(self) -> IRSignal:
         """Fetch the newest received IR signal.
 
         Returns:
@@ -446,11 +458,11 @@ class NatureRemoLocalAPI:
         json = self.__get_json(resp)
         return IRSignalSchema().load(json)
 
-    def post(self, message: str):
+    def send_ir_signal(self, message: str):
         """Emit IR signals provided by request body.
 
         Args:
-            messages: JSON serialized object describing infrared signals.
+            message: JSON serialized object describing infrared signals.
               Includes "data", "freq" and "format" keys.
         """
         endpoint = "/messages"

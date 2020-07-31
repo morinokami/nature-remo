@@ -1,0 +1,40 @@
+{
+  "range": {
+    "modes": {
+      "mode1": {
+        "temp": [
+          "1",
+          "2",
+          "3"
+        ],
+        "vol": [
+          "1",
+          "auto"
+        ],
+        "dir": [
+          "1",
+          "2"
+        ]
+      },
+      "mode2": {
+        "temp": [
+          "1",
+          "2"
+        ],
+        "vol": [
+          "1",
+          "2",
+          "auto"
+        ],
+        "dir": [
+          "auto",
+          "swing"
+        ]
+      }
+    },
+    "fixedButtons": [
+      "power-off"
+    ]
+  },
+  "tempUnit": "c"
+}

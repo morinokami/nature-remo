@@ -1,0 +1,16 @@
+{
+  "model": {
+    "id": "appliance-id",
+    "manufacturer": "XXX",
+    "remote_name": "abc123",
+    "name": "XXX AC 001",
+    "image": "ico_appliance"
+  },
+  "params": {
+    "temp": "27",
+    "mode": "cool",
+    "vol": "auto",
+    "dir": "swing",
+    "button": "power-off"
+  }
+}

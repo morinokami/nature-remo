@@ -19,6 +19,8 @@ from .models import AirConRangeSchema
 from .models import AirConSchema
 from .models import Appliance
 from .models import ApplianceModel
+from .models import ApplianceModelAndParams
+from .models import ApplianceModelAndParamsSchema
 from .models import ApplianceModelSchema
 from .models import ApplianceSchema
 from .models import Button

@@ -11,7 +11,9 @@ class NatureRemoModel:
     """Base class for Nature Remo models."""
 
     def as_json_string(self) -> str:
-        return self.schema().dumps(self, ensure_ascii=True, sort_keys=True)
+        return self.schema().dumps(  # type: ignore
+            self, ensure_ascii=True, sort_keys=True
+        )
 
 
 class UserSchema(Schema):
@@ -87,13 +89,13 @@ class DeviceCore(NatureRemoModel):
     def __repr__(self):
         return (
             f"Device(id='{self.id}', name='{self.name}', "
-            + f"temprature_offset={self.temperature_offset}, "
-            + f"humidity_offset={self.humidity_offset}, "
-            + f"created_at={repr(self.created_at)}, "
-            + f"updated_at={repr(self.updated_at)}, "
-            + f"firmware_version='{self.firmware_version}', "
-            + f"mac_address='{self.mac_address}', "
-            + f"serial_number='{self.serial_number}')"
+            f"temprature_offset={self.temperature_offset}, "
+            f"humidity_offset={self.humidity_offset}, "
+            f"created_at={repr(self.created_at)}, "
+            f"updated_at={repr(self.updated_at)}, "
+            f"firmware_version='{self.firmware_version}', "
+            f"mac_address='{self.mac_address}', "
+            f"serial_number='{self.serial_number}')"
         )
 
 
@@ -143,19 +145,19 @@ class Device(DeviceCore):
             serial_number,
         )
         self.newest_events = newest_events
-        self.schema = DeviceSchema
+        self.schema = DeviceSchema  # type: ignore
 
     def __repr__(self):
         return (
             f"Device(id='{self.id}', name='{self.name}', "
-            + f"temprature_offset={self.temperature_offset}, "
-            + f"humidity_offset={self.humidity_offset}, "
-            + f"created_at={repr(self.created_at)}, "
-            + f"updated_at={repr(self.updated_at)}, "
-            + f"firmware_version='{self.firmware_version}', "
-            + f"mac_address='{self.mac_address}', "
-            + f"serial_number='{self.serial_number}', "
-            + f"newest_events={self.newest_events})"
+            f"temprature_offset={self.temperature_offset}, "
+            f"humidity_offset={self.humidity_offset}, "
+            f"created_at={repr(self.created_at)}, "
+            f"updated_at={repr(self.updated_at)}, "
+            f"firmware_version='{self.firmware_version}', "
+            f"mac_address='{self.mac_address}', "
+            f"serial_number='{self.serial_number}', "
+            f"newest_events={self.newest_events})"
         )
 
 
@@ -193,9 +195,9 @@ class ApplianceModel(NatureRemoModel):
     def __repr__(self):
         return (
             f"ApplianceModel(id='{self.id}', "
-            + f"manufacturer='{self.manufacturer}', "
-            + f"remote_name='{self.remote_name}', "
-            + f"name='{self.name}', image='{self.image}')"
+            f"manufacturer='{self.manufacturer}', "
+            f"remote_name='{self.remote_name}', "
+            f"name='{self.name}', image='{self.image}')"
         )
 
 
@@ -210,7 +212,7 @@ class AirConParamsSchema(Schema):
         unknown = EXCLUDE
 
     @post_load
-    def make_air_con_params(self, data, **kwargs):
+    def make_aircon_params(self, data, **kwargs):
         return AirConParams(**data)
 
 
@@ -226,7 +228,32 @@ class AirConParams(NatureRemoModel):
     def __repr__(self):
         return (
             f"AirConParams(temp='{self.temp}', mode='{self.mode}', "
-            + f"vol='{self.vol}', dir='{self.dir}', button='{self.button}')"
+            f"vol='{self.vol}', dir='{self.dir}', button='{self.button}')"
+        )
+
+
+class ApplianceModelAndParamsSchema(Schema):
+    model = fields.Nested(ApplianceModelSchema)
+    params = fields.Nested(AirConParamsSchema)
+
+    class Meta:
+        unknown = EXCLUDE
+
+    @post_load
+    def make_appliance_model_and_params(self, data, **kwargs):
+        return ApplianceModelAndParams(**data)
+
+
+class ApplianceModelAndParams(NatureRemoModel):
+    def __init__(self, model: ApplianceModel, params: AirConParams):
+        self.model = model
+        self.params = params
+        self.schema = ApplianceModelAndParamsSchema
+
+    def __repr__(self):
+        return (
+            f"ApplianceModelAndParams(model={self.model}, "
+            f"params={self.params})"
         )
 
 
@@ -239,7 +266,7 @@ class AirConRangeModeSchema(Schema):
         unknown = EXCLUDE
 
     @post_load
-    def make_air_con_range_mode(self, data, **kwargs):
+    def make_aircon_range_mode(self, data, **kwargs):
         return AirConRangeMode(**data)
 
 
@@ -265,7 +292,7 @@ class AirConRangeSchema(Schema):
         unknown = EXCLUDE
 
     @post_load
-    def make_air_con_range(self, data, **kwargs):
+    def make_aircon_range(self, data, **kwargs):
         return AirConRange(**data)
 
 
@@ -290,7 +317,7 @@ class AirConSchema(Schema):
         unknown = EXCLUDE
 
     @post_load
-    def make_air_con(self, data, **kwparams):
+    def make_aircon(self, data, **kwparams):
         return AirCon(**data)
 
 

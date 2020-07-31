@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 requests = "*"
 marshmallow = "*"
+click = "*"
 
 [dev-packages]
 pytest = "*"
@@ -16,6 +17,8 @@ responses = "*"
 setuptools = "*"
 wheel = "*"
 twine = "*"
+pytest-watch = "*"
+mypy = "*"
 
 [requires]
 python_version = "3.8"

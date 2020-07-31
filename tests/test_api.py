@@ -1,10 +1,12 @@
-import urllib
+import urllib.parse
 from datetime import datetime
 
 import pytest
 import responses
 
+from .utils import load_json
 from remo import Appliance
+from remo import ApplianceModelAndParams
 from remo import Device
 from remo import IRSignal
 from remo import NatureRemoAPI
@@ -12,9 +14,7 @@ from remo import NatureRemoError
 from remo import NatureRemoLocalAPI
 from remo import Signal
 from remo import User
-
-
-BASE_URL = "https://api.nature.global"
+from remo.api import BASE_URL
 
 
 @pytest.fixture
@@ -74,14 +74,10 @@ class TestAPI:
 
     @responses.activate
     def test_get_user(self, api):
-        user_id = "user-id-123-abc"
-        user_nickname = "lorem ipsum"
+        data = load_json("testdata/user.json")
         url = f"{BASE_URL}/1/users/me"
         responses.add(
-            responses.GET,
-            url,
-            json={"id": user_id, "nickname": user_nickname},
-            status=200,
+            responses.GET, url, json=data, status=200,
         )
 
         user = api.get_user()
@@ -92,62 +88,26 @@ class TestAPI:
 
     @responses.activate
     def test_update_user(self, api):
-        user_id = "user-id-123-abc"
-        user_nickname = "lorem ipsum updated"
+        data = load_json("testdata/user.json")
         url = f"{BASE_URL}/1/users/me"
         responses.add(
-            responses.POST,
-            url,
-            json={"id": user_id, "nickname": user_nickname},
-            status=200,
+            responses.POST, url, json=data, status=200,
         )
 
-        user = api.update_user(user_nickname)
+        user = api.update_user(data["nickname"])
 
         assert type(user) is User
-        assert user.id == user_id
-        assert user.nickname == user_nickname
+        assert user.id == data["id"]
+        assert user.nickname == data["nickname"]
         assert len(responses.calls) == 1
         assert responses.calls[0].request.url == url
 
     @responses.activate
     def test_get_devices(self, api):
-        device_id = "device-id-123-abc"
-        device_name = "Remo"
-        temperature_offset = 0
-        humidity_offset = 0
-        dummy_datetime = "2020-01-01T01:23:45Z"
-        firmware_version = "Remo/1.0.23"
-        mac_address = "ab:cd:ef:01:23:45"
-        serial_number = "1W111111111111"
-        hu_val = 76
-        il_val = 0
-        mo_val = 1
-        te_val = 25.149109
+        data = [load_json("testdata/device.json")]
         url = f"{BASE_URL}/1/devices"
         responses.add(
-            responses.GET,
-            url,
-            json=[
-                {
-                    "id": device_id,
-                    "name": device_name,
-                    "temperature_offset": temperature_offset,
-                    "humidity_offset": humidity_offset,
-                    "created_at": dummy_datetime,
-                    "updated_at": dummy_datetime,
-                    "firmware_version": firmware_version,
-                    "mac_address": mac_address,
-                    "serial_number": serial_number,
-                    "newest_events": {
-                        "hu": {"val": hu_val, "created_at": dummy_datetime},
-                        "il": {"val": il_val, "created_at": dummy_datetime},
-                        "mo": {"val": mo_val, "created_at": dummy_datetime},
-                        "te": {"val": te_val, "created_at": dummy_datetime},
-                    },
-                }
-            ],
-            status=200,
+            responses.GET, url, json=data, status=200,
         )
 
         devices = api.get_devices()
@@ -160,8 +120,8 @@ class TestAPI:
 
     @responses.activate
     def test_update_device(self, api):
-        device = "my-device"
-        name = "natureremo"
+        device = "device-id"
+        name = "Remo"
         url = f"{BASE_URL}/1/devices/{device}"
         responses.add(responses.POST, url, status=200)
 
@@ -176,8 +136,8 @@ class TestAPI:
 
     @responses.activate
     def test_update_device_raises(self, api):
-        device = "my-device"
-        name = "natureremo"
+        device = "device-id"
+        name = "Remo"
         responses.add(
             responses.POST,
             f"{BASE_URL}/1/devices/{device}",
@@ -195,7 +155,7 @@ class TestAPI:
 
     @responses.activate
     def test_delete_device(self, api):
-        device = "my-device"
+        device = "device-id"
         url = f"{BASE_URL}/1/devices/{device}/delete"
         responses.add(responses.POST, url, status=200)
 
@@ -209,7 +169,7 @@ class TestAPI:
 
     @responses.activate
     def test_delete_device_raises(self, api):
-        device = "my-device"
+        device = "device-id"
         responses.add(
             responses.POST,
             f"{BASE_URL}/1/devices/{device}/delete",
@@ -227,7 +187,7 @@ class TestAPI:
 
     @responses.activate
     def test_update_temperature_offset(self, api):
-        device = "my-device"
+        device = "device-id"
         offset = 10
         url = f"{BASE_URL}/1/devices/{device}/temperature_offset"
         responses.add(
@@ -245,7 +205,7 @@ class TestAPI:
 
     @responses.activate
     def test_update_temperature_offset_raises(self, api):
-        device = "my-device"
+        device = "device-id"
         offset = 10
         responses.add(
             responses.POST,
@@ -264,7 +224,7 @@ class TestAPI:
 
     @responses.activate
     def test_update_humidity_offset(self, api):
-        device = "my-device"
+        device = "device-id"
         offset = 10
         url = f"{BASE_URL}/1/devices/{device}/humidity_offset"
         responses.add(
@@ -282,7 +242,7 @@ class TestAPI:
 
     @responses.activate
     def test_update_humidity_offset_raises(self, api):
-        device = "my-device"
+        device = "device-id"
         offset = 10
         responses.add(
             responses.POST,
@@ -300,85 +260,26 @@ class TestAPI:
         )
 
     @responses.activate
-    def test_get_appliances(self, api):
-        id = "appliance-id"
-        device = {
-            "id": "device_id",
-            "name": "device_name",
-            "temperature_offset": 0,
-            "humidity_offset": 0,
-            "created_at": "2020-01-01T01:23:45Z",
-            "updated_at": "2020-01-01T01:23:45Z",
-            "firmware_version": "Remo/1.0.23",
-            "mac_address": "ab:cd:ef:01:23:45",
-            "serial_number": "1W111111111111",
-        }
-        model = {
-            "id": "appliance-modelid",
-            "manufacturer": "XXX",
-            "remote_name": "abc123",
-            "name": "XXX AC 001",
-            "image": "ico_appliance_model",
-        }
-        nickname = "appliance-nickname"
-        image = "ico_appliance"
-        type_ = "AC"
-        settings = {
-            "temp": "27",
-            "mode": "cool",
-            "vol": "auto",
-            "dir": "swing",
-            "button": "power-off",
-        }
-        aircon = {
-            "range": {
-                "modes": {
-                    "mode1": {
-                        "temp": ["1", "2", "3"],
-                        "vol": ["1", "auto"],
-                        "dir": ["1", "2"],
-                    },
-                    "mode2": {
-                        "temp": ["1", "2"],
-                        "vol": ["1", "2", "auto"],
-                        "dir": ["auto", "swing"],
-                    },
-                },
-                "fixedButtons": ["power-off"],
-            },
-            "tempUnit": "c",
-        }
-        signals = [
-            {"id": "signal-id", "name": "signal-name", "image": "ico_signal"}
-        ]
-        tv = {
-            "state": {"input": "t"},
-            "buttons": [
-                {
-                    "name": "button-name",
-                    "image": "ico_button",
-                    "label": "button_label",
-                }
-            ],
-        }
+    def test_detect_appliance(self, api):
+        message = '{"format": "us", "freq": 38, "data": [0]}'
+        data = [load_json("testdata/appliance_model_and_params.json")]
+        url = f"{BASE_URL}/1/detectappliance"
         responses.add(
-            responses.GET,
-            f"{BASE_URL}/1/appliances",
-            json=[
-                {
-                    "id": id,
-                    "device": device,
-                    "model": model,
-                    "nickname": nickname,
-                    "image": image,
-                    "type": type_,
-                    "settings": settings,
-                    "aircon": aircon,
-                    "signals": signals,
-                    "tv": tv,
-                }
-            ],
-            status=200,
+            responses.POST, url, json=data, status=200,
+        )
+
+        model_and_params = api.detect_appliance(message)
+
+        assert type(model_and_params) is list
+        assert len(model_and_params) == 1
+        assert type(model_and_params[0]) is ApplianceModelAndParams
+
+    @responses.activate
+    def test_get_appliances(self, api):
+        data = [load_json("testdata/appliance.json")]
+        url = f"{BASE_URL}/1/appliances"
+        responses.add(
+            responses.GET, url, json=data, status=200,
         )
 
         appliances = api.get_appliances()
@@ -389,57 +290,25 @@ class TestAPI:
 
     @responses.activate
     def test_create_appliance(self, api):
-        device_id = "device-id-123-abc"
-        device_name = "Remo"
-        temperature_offset = 0
-        humidity_offset = 0
-        dummy_datetime = "2020-01-01T01:23:45Z"
-        firmware_version = "Remo/1.0.23"
-        mac_address = "ab:cd:ef:01:23:45"
-        serial_number = "1W111111111111"
-        device = {
-            "id": device_id,
-            "name": device_name,
-            "temperature_offset": temperature_offset,
-            "humidity_offset": humidity_offset,
-            "created_at": dummy_datetime,
-            "updated_at": dummy_datetime,
-            "firmware_version": firmware_version,
-            "mac_address": mac_address,
-            "serial_number": serial_number,
-        }
-        appliance_id = "appliance-id"
-        nickname = "my-appliance"
-        image = "ico_appliance"
+        data = load_json("testdata/appliance_minimal.json")
         url = f"{BASE_URL}/1/appliances"
         responses.add(
-            responses.POST,
-            url,
-            json={
-                "id": appliance_id,
-                "device": device,
-                "nickname": nickname,
-                "image": image,
-                "model": None,
-                "type": "IR",
-                "settings": None,
-                "aircon": None,
-                "signals": [],
-            },
-            status=201,
+            responses.POST, url, json=data, status=201,
         )
 
-        appliance = api.create_appliance(device_id, nickname, image)
+        appliance = api.create_appliance(
+            data["device"]["id"], data["nickname"], data["image"]
+        )
 
         assert type(appliance) is Appliance
-        assert appliance.id == appliance_id
-        assert appliance.nickname == nickname
-        assert appliance.image == image
+        assert appliance.id == data["id"]
+        assert appliance.nickname == data["nickname"]
+        assert appliance.image == data["image"]
         assert len(responses.calls) == 1
         assert responses.calls[0].request.url == url
-        assert (
-            responses.calls[0].request.body
-            == f"device={device_id}&nickname={nickname}&image={image}"
+        assert responses.calls[0].request.body == (
+            f"device={data['device']['id']}&nickname={data['nickname']}&"
+            f"image={data['image']}"
         )
 
     @responses.activate
@@ -465,12 +334,12 @@ class TestAPI:
 
     @responses.activate
     def test_update_appliance_orders(self, api):
+        appliances = "id-xxx,id-yyy,id-zzz"
         url = f"{BASE_URL}/1/appliance_orders"
         responses.add(
             responses.POST, url, status=200,
         )
 
-        appliances = "id-xxx,id-yyy,id-zzz"
         try:
             api.update_appliance_orders(appliances)
         except NatureRemoError as e:
@@ -485,6 +354,7 @@ class TestAPI:
 
     @responses.activate
     def test_update_appliance_orders_raises(self, api):
+        appliances = "id-xxx,id-yyy,id-zzz"
         url = f"{BASE_URL}/1/appliance_orders"
         responses.add(
             responses.POST,
@@ -493,7 +363,6 @@ class TestAPI:
             status=400,
         )
 
-        appliances = "id-xxx,id-yyy,id-zzz"
         with pytest.raises(NatureRemoError) as excinfo:
             api.update_appliance_orders(appliances)
         assert (
@@ -537,29 +406,30 @@ class TestAPI:
 
     @responses.activate
     def test_update_appliance(self, api):
-        appliance = "appliance-id"
-        nickname = "appliance-nickname"
-        image = "ico_nickname"
-        url = f"{BASE_URL}/1/appliances/{appliance}"
-        responses.add(responses.POST, url, status=200)
+        data = load_json("testdata/appliance_minimal.json")
+        url = f"{BASE_URL}/1/appliances/{data['id']}"
+        responses.add(responses.POST, url, json=data, status=200)
 
-        try:
-            api.update_appliance(appliance, nickname, image)
-        except NatureRemoError as e:
-            pytest.fail(str(e))
+        appliance = api.update_appliance(
+            data["id"], data["nickname"], data["image"]
+        )
 
+        assert type(appliance) is Appliance
+        assert appliance.id == data["id"]
+        assert appliance.nickname == data["nickname"]
+        assert appliance.image == data["image"]
         assert len(responses.calls) == 1
         assert responses.calls[0].request.url == url
         assert (
             responses.calls[0].request.body
-            == f"nickname={nickname}&image={image}"
+            == f"nickname={data['nickname']}&image={data['image']}"
         )
 
     @responses.activate
     def test_update_appliance_raises(self, api):
         appliance = "appliance-id"
         nickname = "appliance-nickname"
-        image = "ico_nickname"
+        image = "ico_appliance"
         url = f"{BASE_URL}/1/appliances/{appliance}"
         responses.add(
             responses.POST,
@@ -729,34 +599,31 @@ class TestAPI:
 
     @responses.activate
     def test_create_signal(self, api):
-        appliance = "appliance_id"
-        name = "signal1"
+        appliance = "appliance-id"
         message = '{"freq": 38, "data": [2523, 2717, 786], "format": "us"}'
-        image = "ico_signal"
+        data = load_json("testdata/signal.json")
         url = f"{BASE_URL}/1/appliances/{appliance}/signals"
         responses.add(
-            responses.POST,
-            url,
-            json={"id": "signal-id", "name": name, "image": image},
-            status=201,
+            responses.POST, url, json=data, status=201,
         )
 
-        signal = api.create_signal(appliance, name, message, image)
+        signal = api.create_signal(
+            appliance, data["name"], message, data["image"]
+        )
 
         assert type(signal) is Signal
-        assert signal.name == name
-        assert signal.image == image
+        assert signal.name == data["name"]
+        assert signal.image == data["image"]
         assert len(responses.calls) == 1
         assert responses.calls[0].request.url == url
-        assert (
-            responses.calls[0].request.body
-            == f"name={name}&message={urllib.parse.quote_plus(message)}&"
-            + f"image={image}"
+        assert responses.calls[0].request.body == (
+            f"name={data['name']}&message={urllib.parse.quote_plus(message)}&"
+            f"image={data['image']}"
         )
 
     @responses.activate
     def test_create_signal_raises(self, api):
-        appliance = "appliance_id"
+        appliance = "appliance-id"
         name = "signal1"
         message = '{"freq": 38, "data": [2523, 2717, 786], "format": "us"}'
         image = "ico_signal"
@@ -929,35 +796,30 @@ def local_api():
 
 class TestLocalAPI:
     @responses.activate
-    def test_get(self, local_api):
-        freq = 38
-        data = [0]
-        format = "us"
+    def test_get_message(self, local_api):
+        data = load_json("testdata/ir_signal.json")
         url = f"http://{local_api.addr}/messages"
         responses.add(
-            responses.GET,
-            url,
-            json={"freq": freq, "data": data, "format": format},
-            status=200,
+            responses.GET, url, json=data, status=200,
         )
 
-        ir_signal = local_api.get()
+        ir_signal = local_api.get_ir_signal()
 
         assert type(ir_signal) is IRSignal
-        assert ir_signal.freq == freq
-        assert ir_signal.data == data
-        assert ir_signal.format == format
+        assert ir_signal.freq == data["freq"]
+        assert ir_signal.data == data["data"]
+        assert ir_signal.format == data["format"]
         assert len(responses.calls) == 1
         assert responses.calls[0].request.url == url
 
     @responses.activate
-    def test_post(self, local_api):
+    def test_post_message(self, local_api):
         message = '{"format": "us", "freq": 38, "data": [0]}'
         url = f"http://{local_api.addr}/messages"
         responses.add(responses.POST, url, status=200)
 
         try:
-            local_api.post(message)
+            local_api.send_ir_signal(message)
         except NatureRemoError as e:
             pytest.fail(str(e))
 

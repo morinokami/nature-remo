@@ -7,7 +7,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 with open("README.md", "r") as f:
     desc = f.read()
 
-about = {}
+about = {}  # type: ignore
 with open(os.path.join(here, "remo", "__version__.py"), "r") as f:
     exec(f.read(), about)
 
@@ -34,5 +34,10 @@ setuptools.setup(
         "Topic :: Internet",
     ],
     packages=setuptools.find_packages(exclude="tests"),
-    install_requires=["marshmallow==3.7.1", "requests==2.24.0"],
+    install_requires=[
+        "marshmallow==3.7.1",
+        "requests==2.24.0",
+        "click==7.1.2",
+    ],
+    entry_points={"console_scripts": ["remo = remo.cli:main"]},
 )
