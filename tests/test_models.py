@@ -16,6 +16,7 @@ from remo import DeviceSchema
 from remo import IRSignalSchema
 from remo import LightSchema
 from remo import LightStateSchema
+from remo import SensorValueSchema
 from remo import SignalSchema
 from remo import TVSchema
 from remo import TVStateSchema
@@ -42,6 +43,17 @@ def test_user():
     assert str(user) == (
         f"User(id='{data['id']}', nickname='{data['nickname']}')"
     )
+
+
+def test_sensor_value():
+    data = load_json("testdata/sensor_value.json")
+    sensor_value = SensorValueSchema().load(data)
+
+    assert sensor_value.val == data["val"]
+    assert sensor_value.created_at == str_to_datetime(data["created_at"])
+
+    assert sensor_value.as_json_string()
+    assert str(sensor_value)
 
 
 def test_device_core():
@@ -75,28 +87,20 @@ def test_device():
     assert device.firmware_version == data["firmware_version"]
     assert device.mac_address == data["mac_address"]
     assert device.serial_number == data["serial_number"]
-    assert (
-        device.newest_events["hu"]["val"] == data["newest_events"]["hu"]["val"]
-    )
-    assert device.newest_events["hu"]["created_at"] == str_to_datetime(
+    assert device.newest_events["hu"].val == data["newest_events"]["hu"]["val"]
+    assert device.newest_events["hu"].created_at == str_to_datetime(
         data["newest_events"]["hu"]["created_at"]
     )
-    assert (
-        device.newest_events["il"]["val"] == data["newest_events"]["il"]["val"]
-    )
-    assert device.newest_events["il"]["created_at"] == str_to_datetime(
+    assert device.newest_events["il"].val == data["newest_events"]["il"]["val"]
+    assert device.newest_events["il"].created_at == str_to_datetime(
         data["newest_events"]["il"]["created_at"]
     )
-    assert (
-        device.newest_events["mo"]["val"] == data["newest_events"]["mo"]["val"]
-    )
-    assert device.newest_events["mo"]["created_at"] == str_to_datetime(
+    assert device.newest_events["mo"].val == data["newest_events"]["mo"]["val"]
+    assert device.newest_events["mo"].created_at == str_to_datetime(
         data["newest_events"]["mo"]["created_at"]
     )
-    assert (
-        device.newest_events["te"]["val"] == data["newest_events"]["te"]["val"]
-    )
-    assert device.newest_events["te"]["created_at"] == str_to_datetime(
+    assert device.newest_events["te"].val == data["newest_events"]["te"]["val"]
+    assert device.newest_events["te"].created_at == str_to_datetime(
         data["newest_events"]["te"]["created_at"]
     )
 
