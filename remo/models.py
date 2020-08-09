@@ -42,6 +42,25 @@ class SensorValueSchema(Schema):
     val = fields.Float()
     created_at = fields.DateTime()
 
+    class Meta:
+        unknown = EXCLUDE
+
+    @post_load
+    def make_sensor_value(self, data, **kwargs):
+        return SensorValue(**data)
+
+
+class SensorValue(NatureRemoModel):
+    def __init__(self, val: float, created_at: datetime):
+        self.val = val
+        self.created_at = created_at
+        self.schema = SensorValueSchema
+
+    def __repr__(self):
+        return (
+            f"SensorValue(val={self.val}, created_at={repr(self.created_at)})"
+        )
+
 
 class DeviceCoreSchema(Schema):
     id = fields.Str()

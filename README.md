@@ -36,7 +36,7 @@ To fetch the list of Remo devices and print the temperature of the first device:
 
 ```py
 >>> devices = api.get_devices()
->>> devices[0].newest_events['te']['val']
+>>> devices[0].newest_events['te'].val
 26.528809
 ```
 
@@ -322,7 +322,7 @@ Remo の機器リストを取得し、最初の機器の温度を表示する:
 
 ```py
 >>> devices = api.get_devices()
->>> devices[0].newest_events['te']['val']
+>>> devices[0].newest_events['te'].val
 26.528809
 ```
 

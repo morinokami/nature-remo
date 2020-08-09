@@ -35,6 +35,8 @@ from .models import Light
 from .models import LightSchema
 from .models import LightState
 from .models import LightStateSchema
+from .models import SensorValue
+from .models import SensorValueSchema
 from .models import Signal
 from .models import SignalSchema
 from .models import TV
